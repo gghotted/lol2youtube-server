@@ -1,0 +1,2 @@
+class JsonDataAlreadyExist(Exception):
+        pass

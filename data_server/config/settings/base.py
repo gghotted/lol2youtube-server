@@ -10,22 +10,28 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import json
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+ROOT_DIR = BASE_DIR.parent
+
+SECRET_DIR = ROOT_DIR / '.secrets'
+SECRET_COMMON_FILE = SECRET_DIR / 'common.json'
+SECRET_DEBUG_FILE = SECRET_DIR / 'debug.json'
+SECRET_DEPLOY_FILE = SECRET_DIR / 'deploy.json'
+COMMON_SECRET = json.loads(SECRET_COMMON_FILE.read_text())
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-cen*50m_$m@$f!*67h+hui1(q*q2fr6v8278s=1p$^^+2txshb'
+SECRET_KEY = COMMON_SECRET['secret_key']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -37,7 +43,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'raw_data'
+    'django_extensions',
+    'raw_data',
+    'match',
+    'summoner',
+    'timeline',
 ]
 
 MIDDLEWARE = [
@@ -67,8 +77,6 @@ TEMPLATES = [
         },
     },
 ]
-
-WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
@@ -118,3 +126,19 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+RIOT_API_KEY = COMMON_SECRET['riot_api_key']
+
+# 매치 데이터를 이 시간 이내에 다시 업데이트할 수 없습니다.
+SUMMONER_MIN_UPDATE_TIME = timedelta(days=1)
+
+'''
+크롤링할 queue_id 입니다.
+450: 칼바람 나락 -> 리플레이를 다운로드할 수 없음
+420: 솔랭
+'''
+MATCH_LIST_QUEUE_ID = 420
+
+
+# 한 번의 요청에 가져올 match의 갯수입니다.
+MATCH_LIST_COUNT = 10
