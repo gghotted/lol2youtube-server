@@ -1,9 +1,8 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from summoner.models import Summoner
 from timeline.models import Timeline
 
-from match.models import Match
+from match.models import Match, Participant
 
 
 @receiver(post_save, sender=Match)
@@ -12,15 +11,12 @@ def match_post_save(sender, **kwargs):
     # annotate 속성을 가져오기 위함
     match = Match.objects.get(id=match.id)
 
-    participants = match.json.dot_data.metadata.participants
+    # 참가자 생성 및 연결
+    participants = match.json.dot_data.info.participants
+    for idx, dot_data in enumerate(participants):
+        Participant.objects.create(match=match, **Participant.parse_json(dot_data))
 
-    Summoner.objects.bulk_create(
-        [Summoner(puuid=puuid) for puuid in participants], ignore_conflicts=True
-    )
-    match.participants.add(
-        *Summoner.objects.filter(puuid__in=participants)
-    )
-
+    # 타임라인 생성
     Timeline.objects.create_or_get_from_api(match_id=match.id)
     print_log(match)
 

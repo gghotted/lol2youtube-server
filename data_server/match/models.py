@@ -4,6 +4,7 @@ from common.models import BaseManager, BaseModel
 from django.db import models
 from django.db.models import F
 from raw_data.riot_api import MatchAPI
+from summoner.models import Summoner
 
 
 class MatchManager(BaseManager):
@@ -25,7 +26,6 @@ class MatchManager(BaseManager):
 class Match(BaseModel):
     json = models.ForeignKey('raw_data.JsonData', models.DO_NOTHING)
     id = models.CharField(primary_key=True, max_length=64)
-    participants = models.ManyToManyField('summoner.Summoner', related_name='matches')
     game_creation = models.DateTimeField()
     has_pentakill = models.BooleanField()
     has_quadrakill = models.BooleanField()
@@ -72,3 +72,26 @@ class Match(BaseModel):
     @staticmethod
     def parse_queue_id(data):
         return data.info.queueId
+
+    @property
+    def summoners(self):
+        return Summoner.objects.filter(participants__match=self)
+
+
+class Participant(BaseModel):
+    match = models.ForeignKey(Match, models.CASCADE, related_name='participants')
+    summoner = models.ForeignKey('summoner.Summoner', models.DO_NOTHING, related_name='participants')
+    index = models.PositiveIntegerField()
+    champion = models.CharField(max_length=64)
+
+    @staticmethod
+    def parse_summoner(data):
+        return Summoner.objects.get_or_create(puuid=data.puuid, defaults={'name': data.summonerName})[0]
+
+    @staticmethod
+    def parse_champion(data):
+        return data.championName
+
+    @staticmethod
+    def parse_index(data):
+        return data.participantId

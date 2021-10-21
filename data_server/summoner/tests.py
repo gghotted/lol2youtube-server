@@ -47,7 +47,7 @@ class SummonerGetToUpdateTest(TestCase):
     def test_normal(self):
         recent_match = Match.objects.order_by('-game_creation').first()
         summoner = Summoner.objects.get_to_update()
-        self.assertTrue(recent_match.participants.filter(puuid=summoner.puuid).exists())
+        self.assertTrue(recent_match.summoners.filter(puuid=summoner.puuid).exists())
 
     def test_filter_updated_summoners(self):
         before_count = Summoner.objects.order_by_update_priority().count()
@@ -103,9 +103,3 @@ class SummonerGetToUpdateTest(TestCase):
             else:
                 yield group
                 group = []
-
-
-
-
-
-
