@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'match',
     'summoner',
     'timeline',
+    'event',
 ]
 
 MIDDLEWARE = [
