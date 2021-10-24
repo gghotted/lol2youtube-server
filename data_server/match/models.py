@@ -77,7 +77,7 @@ class Participant(BaseModel):
 
     @staticmethod
     def parse_summoner(data):
-        return Summoner.objects.get_or_create(puuid=data.puuid, defaults={'name': data.summonerName})[0]
+        return Summoner.objects.update_or_create(puuid=data.puuid, defaults={'name': data.summonerName})[0]
 
     @staticmethod
     def parse_champion(data):
