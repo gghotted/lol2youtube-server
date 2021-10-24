@@ -62,7 +62,7 @@ class ChampionKillCreateTest(TestCase):
             self.timeline,
             self.kill_events[0]
         )
-        kill = ChampionKill.objects.get(id=kill.id)
+        kill = ChampionKill.objects.all().annotate_avg().get(id=kill.id)
 
         self.assertTrue(isinstance(kill.killer, Participant))
         self.assertTrue(isinstance(kill.victim, Participant))
@@ -81,7 +81,7 @@ class ChampionKillCreateTest(TestCase):
                 kill_event
             )
 
-        pentakills = ChampionKill.objects.root_kills(length=5)
+        pentakills = ChampionKill.objects.interested_kills().filter(length=5)
         self.assertEqual(pentakills.count(), 1)
 
         pentakill = pentakills.first()
@@ -112,8 +112,8 @@ class ChampionKillCreateTest(TestCase):
         kill2.victim = list(victims)[0]
         kill2 = Event.create_by_type(self.timeline, kill2)
 
-        kill1 = ChampionKill.objects.get(id=kill1.id)
-        kill2 = ChampionKill.objects.get(id=kill2.id)
+        kill1 = ChampionKill.objects.all().annotate_avg().get(id=kill1.id)
+        kill2 = ChampionKill.objects.all().annotate_avg().get(id=kill2.id)
 
         self.assertEqual(kill1.sequence.count(), 2)
         self.assertEqual(kill2.sequence.count(), 0)
