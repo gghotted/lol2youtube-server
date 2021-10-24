@@ -68,7 +68,8 @@ class NotImplementedEvent(Event):
 
 
 class ChampionKill(Event):
-    killer = models.ForeignKey('match.Participant', models.CASCADE, related_name='kill_events')
+    # 오브젝트에 의한 킬이 있으므로, null, blank = True
+    killer = models.ForeignKey('match.Participant', models.CASCADE, related_name='kill_events', null=True, blank=True)
     victim = models.ForeignKey('match.Participant', models.CASCADE, related_name='death_events')
     start = models.ForeignKey('self', models.CASCADE, null=True, blank=True, related_name='sequence')
     damage = models.PositiveIntegerField()
@@ -81,7 +82,7 @@ class ChampionKill(Event):
 
     @staticmethod
     def parse_killer(data):
-        return data.timeline.match.participants.get(index=data.killerId)
+        return data.timeline.match.participants.filter(index=data.killerId).first()
 
     @staticmethod
     def parse_victim(data):
