@@ -142,14 +142,14 @@ class ChampionKill(Event):
         return self.killer == kill.killer
 
     def _addable_check_victim(self, kill):
-        return kill.victim.id not in self.sequence.values_list('victim__id', flat=True)
+        return kill.victim.id not in self.start.sequence.values_list('victim__id', flat=True)
 
     def _addable_check_time_sequence(self, kill):
         return self.time <= kill.time
 
     def _addable_check_timeout(self, kill):
         diff_sec = (kill.time - self.time) / 1000
-        if self.sequence.count() <= 3:
+        if self.start.sequence.count() <= 3:
             return diff_sec <= 10
         else:
             return diff_sec <= 30
