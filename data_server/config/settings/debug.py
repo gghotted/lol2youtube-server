@@ -6,11 +6,6 @@ DEBUG = DEBUG_SECRET['debug']
 
 ALLOWED_HOSTS = DEBUG_SECRET['allowed_hosts']
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+DATABASES = {'default': DEBUG_SECRET['databases']}
 
 WSGI_APPLICATION = 'config.wsgi.debug.application'

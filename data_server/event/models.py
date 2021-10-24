@@ -1,14 +1,12 @@
 from datetime import time
 
-from common.models import BaseManager, BaseModel
+from common.models import BaseModel
 from django.db import models
-from django.db.models.aggregates import Avg, Count, Max, Min
-from django.db.models.expressions import F
-from django.db.models.functions import Cast
 from easydict import EasyDict
 
 from event.exceptions import (NotAddableKillSequenceException,
                               NotFoundPrevKillException)
+from event.managers import ChampionKillManager
 
 
 class Event(BaseModel):
@@ -64,24 +62,9 @@ class Event(BaseModel):
             microsecond=us
         )
 
+
 class NotImplementedEvent(Event):
     pass
-
-
-class ChampionKillManager(BaseManager):
-    def get_queryset(self):
-        return super().get_queryset().annotate(
-            length=Count('sequence'),
-            avg_damage=Avg('sequence__damage'),
-            avg_damage_contribution=Avg('sequence__damage_contribution'),
-            avg_interval=(
-                Cast(Max('sequence__time') - Min('sequence__time'), models.FloatField())
-                / F('length')
-            )
-        )
-
-    def root_kills(self, **kwargs):
-        return self.get_queryset().exclude(length=0).filter(**kwargs)
 
 
 class ChampionKill(Event):
@@ -169,4 +152,3 @@ class ChampionKill(Event):
             return diff_sec <= 10
         else:
             return diff_sec <= 30
-

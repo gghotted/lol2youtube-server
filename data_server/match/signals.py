@@ -22,13 +22,12 @@ def match_post_save(sender, **kwargs):
 
 
 def print_log(match):
-    s = '{game_creation}, {pentakill}/{quadrakill}/{triplekill}/{total}/{is_interested}, {id}({queue_id})'.format(
+    s = '{game_creation}, {pentakill}/{quadrakill}/{triplekill}/{total}, {id}({queue_id})'.format(
         game_creation=match.game_creation,
         pentakill=Match.objects.filter(has_pentakill=True).count(),
         quadrakill=Match.objects.filter(has_quadrakill=True).count(),
         triplekill=Match.objects.filter(has_triplekill=True).count(),
         total=Match.objects.count(),
-        is_interested=match.is_interested,
         id=match.id,
         queue_id=match.queue_id,
     )

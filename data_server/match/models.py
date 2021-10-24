@@ -13,15 +13,6 @@ class MatchManager(BaseManager):
         for match_id in match_list:
             self.create_from_api(match_id=match_id)
 
-    def get_queryset(self):
-        return super().get_queryset().annotate(
-            is_interested=(
-                F('has_pentakill')
-                .bitor(F('has_quadrakill'))
-                .bitor(F('has_triplekill'))
-            )
-        )
-
 
 class Match(BaseModel):
     json = models.ForeignKey('raw_data.JsonData', models.DO_NOTHING)
