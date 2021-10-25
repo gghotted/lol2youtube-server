@@ -42,7 +42,11 @@ class Event(BaseModel):
         event_classes = {
             'CHAMPION_KILL': ChampionKill
         }
-        event_cls = event_classes.get(data.type, NotImplementedEvent)
+        event_cls = event_classes.get(data.type)
+
+        if not event_cls:
+            return
+
         return event_cls.objects.create(**event_cls.parse_json(data))
 
     @property
