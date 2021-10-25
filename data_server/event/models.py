@@ -78,6 +78,7 @@ class ChampionKill(Event):
     start = models.ForeignKey('self', models.CASCADE, null=True, blank=True, related_name='sequence')
     damage = models.PositiveIntegerField()
     damage_contribution = models.FloatField()
+    bounty = models.PositiveIntegerField()
 
     objects = ChampionKillManager()
 
@@ -108,6 +109,10 @@ class ChampionKill(Event):
             for damage in data.victimDamageReceived
         )
         return killer_damage / total_damage
+
+    @staticmethod
+    def parse_bounty(data):
+        return data.bounty
 
     def get_prev_kill(self):
         prev_kill = ChampionKill.objects \
