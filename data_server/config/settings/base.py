@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'summoner',
     'timeline',
     'event',
+    'replay'
 ]
 
 MIDDLEWARE = [
