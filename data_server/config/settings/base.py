@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'summoner',
     'timeline',
     'event',
+    'replay'
 ]
 
 MIDDLEWARE = [
@@ -122,6 +123,10 @@ TIME_ZONE = 'Asia/Seoul'
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
