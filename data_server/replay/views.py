@@ -1,3 +1,7 @@
-from django.shortcuts import render
+from rest_framework.generics import CreateAPIView
 
-# Create your views here.
+from replay import serializers
+
+
+class KillReplayCreateView(CreateAPIView):
+    serializer_class = serializers.KillReplayCreateSerializer
