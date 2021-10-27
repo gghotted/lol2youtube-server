@@ -5,5 +5,5 @@ from replay import views
 app_name = 'replay'
 
 urlpatterns = [
-    path('', views.KillReplayCreateView.as_view(), name='kill_create')
+    path('kill/', views.KillReplayCreateView.as_view(), name='kill_create')
 ]

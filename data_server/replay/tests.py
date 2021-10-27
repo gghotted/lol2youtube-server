@@ -28,7 +28,7 @@ class KillReplayCreateViewTest(TestCase):
         super().tearDownClass()
 
     def test_url(self):
-        self.assertEqual(self.url, '/replay/')
+        self.assertEqual(self.url, '/replay/kill/')
 
     def test_normal(self):
         with open(self.replay_path, 'rb') as f:
