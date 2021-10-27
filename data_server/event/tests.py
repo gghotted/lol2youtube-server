@@ -1,13 +1,20 @@
 import os
+import shutil
+import tempfile
 from datetime import time
 
 from django.test import TestCase
+from django.test.utils import override_settings
+from django.urls import reverse_lazy
 from easydict import EasyDict
 from match.models import Match, Participant
+from replay.tests import KillReplayCreateViewTest
+from schema import Schema
 from timeline.models import Timeline
 
 from event.models import ChampionKill, Event, NotImplementedEvent
 
+MEDIA_ROOT = tempfile.mkdtemp()
 
 class EventCreateTest(TestCase):
     match_id = os.environ['TEST_MATCH_ID']
@@ -132,7 +139,55 @@ class ChampionKillCreateTest(TestCase):
         self.assertEqual(kill2.start, kill1)
 
 
+@override_settings(MEDIA_ROOT=MEDIA_ROOT)
+class NotRecordedChampionKillDetailViewTest(TestCase):
+    url = reverse_lazy('event:detail_not_recorded')
+    match_id = os.environ['TEST_MATCH_ID']
+    replay_path = os.environ['TEST_REPLAY_PATH']
+    success_schema = Schema(
+        {
+            'id': int,
+            'created': str,
+            'updated': str,
+            'timeline': str,
+            'type': str,
+            'time': int,
+            'json_src': dict,
+            'killer': int,
+            'victim': int,
+            'start': int,
+            'damage': int,
+            'damage_contribution': float,
+            'bounty': int,
+        }
+    )
 
+    @classmethod
+    def setUpTestData(cls):
+        cls.match = Match.objects.create_or_get_from_api(match_id=cls.match_id)
+        cls.kill_events = ChampionKill.objects.not_recorded()
 
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(MEDIA_ROOT, ignore_errors=True)
+        super().tearDownClass()
 
+    def test_url(self):
+        self.assertEqual(self.url, '/event/not-recorded/')
 
+    def test_normal(self):
+        res = self.client.get(self.url)
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(self.success_schema.is_valid(res.json()))
+
+    def test_exclude_recorded(self):
+        with open(self.replay_path, 'rb') as f:
+            data = {
+                'file': f,
+                'event': self.kill_events.first().pk
+            }
+            self.client.post(KillReplayCreateViewTest.url, data)
+
+        res = self.client.get(self.url)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()['id'], self.kill_events[1].id)
