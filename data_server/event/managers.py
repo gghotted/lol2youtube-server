@@ -3,6 +3,7 @@ from django.db import models
 from django.db.models.aggregates import Avg, Count, Max, Min
 from django.db.models.expressions import F, Value, Window
 from django.db.models.functions import Cast, DenseRank
+from replay.models import KillReplay
 
 
 class ChampionKillQuerySet(models.QuerySet):
@@ -76,3 +77,7 @@ class ChampionKillManager(BaseManager):
         return (self.get_queryset().filter(length__in=[3, 4, 5])
                                    .annotate_avg()
                                    .annotate_rank().order_by('rank'))
+
+    def not_recorded(self):
+        recorded_ids = KillReplay.objects.values('event__id')
+        return self.interested_kills().exclude(id__in=recorded_ids)
