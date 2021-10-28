@@ -48,8 +48,10 @@ class Summoner(BaseModel):
 
         match_list = MatchListAPI(self.puuid)().json
         Match.objects.creates_or_get_from_api(match_id=match_list)
-        self.match_updated_at = datetime.now()
-        self.save()
+
+        updated_self = Summoner.objects.get(puuid=self.puuid)
+        updated_self.match_updated_at = datetime.now()
+        updated_self.save()
 
     @property
     def matches(self):
