@@ -1,5 +1,18 @@
+import signal
+
 from match.models import Match
 from summoner.models import Summoner
+
+sigint_received = False
+
+
+def sigint_handler(sig, frame):
+    global sigint_received
+    sigint_received = True
+    print('사이클 완료후 종료됩니다.')
+
+
+signal.signal(signal.SIGINT, sigint_handler)
 
 
 class MatchCrawler:
@@ -15,7 +28,7 @@ class MatchCrawler:
         summoner.update_matches()
 
     def _is_continuable(self):
-        return Match.objects.count() < self.break_count
+        return (Match.objects.count() < self.break_count) and (sigint_received == False)
 
 
 def run():
