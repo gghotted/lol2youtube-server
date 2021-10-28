@@ -27,7 +27,7 @@ class Summoner(BaseModel):
     '''
     이 서비스의 핵심은 match data 이므로, puuid만 저장하고 따로 api는 요청하지 않음.
     '''
-    json = models.ForeignKey('raw_data.JsonData', models.DO_NOTHING, null=True)
+    json = models.ForeignKey('raw_data.JsonData', models.DO_NOTHING, null=True, blank=True)
     puuid = models.CharField(max_length=128, unique=True)
     name = models.CharField(max_length=64, blank=True)
     match_updated_at = models.DateTimeField(default=datetime.min)
