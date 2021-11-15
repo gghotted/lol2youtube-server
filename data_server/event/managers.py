@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models.aggregates import Avg, Count, Max, Min
 from django.db.models.expressions import F, Value, Window
 from django.db.models.functions import Cast, DenseRank
-from replay.models import KillReplay
+from replay.models import KillReplay, ReplayBlackList
 
 
 class ChampionKillQuerySet(models.QuerySet):
@@ -71,7 +71,9 @@ class ChampionKillQuerySet(models.QuerySet):
 class ChampionKillManager(BaseManager):
 
     def get_queryset(self):
-        return ChampionKillQuerySet(self.model, using=self._db).annotate_length()
+        qs = ChampionKillQuerySet(self.model, using=self._db)
+        blacklist_match_ids = ReplayBlackList.objects.values('match__id')
+        return qs.exclude(timeline__id__in=blacklist_match_ids).annotate_length()
 
     def interested_kills(self):
         return (self.get_queryset().filter(length__in=[3, 4, 5])
