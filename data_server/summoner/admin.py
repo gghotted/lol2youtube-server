@@ -6,6 +6,8 @@ from summoner.models import Summoner
 @admin.register(Summoner)
 class SummonerAdmin(admin.ModelAdmin):
     list_display = ('name', 'match_updated_at', 'recent_match_at')
+    fields = ('name', 'puuid', 'match_updated_at')
+    list_per_page = 20
 
     def get_queryset(self, request):
         return self.model.objects.order_by_update_priority()

@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'summoner',
     'timeline',
     'event',
-    'replay'
+    'replay',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -60,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -148,3 +150,8 @@ MATCH_LIST_QUEUE_ID = 420
 
 # 한 번의 요청에 가져올 match의 갯수입니다.
 MATCH_LIST_COUNT = 10
+
+INTERNAL_IPS = (
+    '127.0.0.1',
+    '192.168.0.3',
+)
