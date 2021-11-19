@@ -16,4 +16,4 @@ class ReplaySource(BaseModel):
 
 
 class KillReplay(ReplaySource):
-    event = models.ForeignKey('event.ChampionKill', on_delete=models.DO_NOTHING)
+    event = models.ForeignKey('event.ChampionKill', on_delete=models.DO_NOTHING, related_name='replays')
