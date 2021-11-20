@@ -1,5 +1,9 @@
+from django.conf import settings
 from django.contrib import admin
+from django.db import models
+from django.db.models.expressions import OuterRef, Subquery
 from django.utils.safestring import mark_safe
+from replay.models import KillReplay
 
 from event.models import ChampionKill
 
@@ -7,19 +11,29 @@ from event.models import ChampionKill
 @admin.register(ChampionKill)
 class ChampionKillAdmin(admin.ModelAdmin):
     list_display = (
-        'rank',
-        'interested_score',
+        'id',
         'length',
-        'nor_avg_damage_contribution',
-        'nor_interval',
+        'created',
         'replay',
     )
+    fields = (
+        'killer',
+        'victim',
+    )
+    readonly_fields = (
+        'killer',
+        'victim',
+    )
+    list_per_page = 20
 
     def get_queryset(self, request):
-        return ChampionKill.objects.interested_kills()
+        replays = KillReplay.objects.filter(event=OuterRef('pk'))
+        return ChampionKill.objects.interested_kills().annotate(
+            replay_url=Subquery(replays.values('file')[:1], output_field=models.CharField())
+        )
 
     def get_ordering(self, request):
-        return ('rank', )
+        return ('replay_url', '-created')
 
     @admin.display(ordering='rank')
     def rank(self, obj):
@@ -41,12 +55,9 @@ class ChampionKillAdmin(admin.ModelAdmin):
     def nor_interval(self, obj):
         return obj.nor_interval
 
-    @admin.display(ordering='replays__file')
+    @admin.display(ordering='replay_url')
     def replay(self, obj):
-        replay = obj.replays.first()
-
-        if not replay:
+        if not obj.replay_url:
             return None
-
-        return mark_safe('<a href="%s">link</a>' % (replay.file.url))
-
+        link = settings.MEDIA_URL + '/' + obj.replay_url
+        return mark_safe('<a href="%s">link</a>' % (link))

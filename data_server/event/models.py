@@ -79,6 +79,7 @@ class ChampionKill(Event):
     damage = models.PositiveIntegerField()
     damage_contribution = models.FloatField()
     bounty = models.PositiveIntegerField()
+    length = models.PositiveIntegerField(default=1)
 
     objects = ChampionKillManager()
 
@@ -134,8 +135,20 @@ class ChampionKill(Event):
     def add_sequence(self, kill):
         if not self.addable(kill):
             raise NotAddableKillSequenceException
-        kill.start = self.start
+        self._add_sequence(kill)
+
+    def _add_sequence(self, kill):
+        self._set_length(kill)
+        self._set_start(kill)
+        self.start.save()
         kill.save()
+
+    def _set_length(self, kill):
+        self.start.length += 1
+        kill.length = 0
+
+    def _set_start(self, kill):
+        kill.start = self.start
 
     def addable(self, kill):
         return all([
@@ -145,7 +158,7 @@ class ChampionKill(Event):
         ])
 
     def _addable_check_count(self, kill):
-        return self.sequence.count() < 5 and kill.sequence.count() == 0
+        return self.length < 5 and kill.length == 1
 
     def _addable_check_killer(self, kill):
         return self.killer == kill.killer
@@ -158,7 +171,7 @@ class ChampionKill(Event):
 
     def _addable_check_timeout(self, kill):
         diff_sec = (kill.time - self.time) / 1000
-        if self.start.sequence.count() <= 3:
+        if self.start.length <= 3:
             return diff_sec <= 10
         else:
             return diff_sec <= 30
