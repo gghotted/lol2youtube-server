@@ -161,7 +161,7 @@ class ChampionKill(Event):
         return self.length < 5 and kill.length == 1
 
     def _addable_check_killer(self, kill):
-        return self.killer == kill.killer
+        return (self.killer == kill.killer) and (self.killer is not None)
 
     def _addable_check_victim(self, kill):
         return kill.victim.id not in self.start.sequence.values_list('victim__id', flat=True)
