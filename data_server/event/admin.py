@@ -25,6 +25,7 @@ class ChampionKillAdmin(admin.ModelAdmin):
         'victim',
     )
     list_per_page = 20
+    show_full_result_count = False
 
     def get_queryset(self, request):
         replays = KillReplay.objects.filter(event=OuterRef('pk'))
