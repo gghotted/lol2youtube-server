@@ -73,12 +73,10 @@ class ChampionKillManager(BaseManager):
     def get_queryset(self):
         qs = ChampionKillQuerySet(self.model, using=self._db)
         blacklist_match_ids = ReplayBlackList.objects.values('match__id')
-        return qs.exclude(timeline__id__in=blacklist_match_ids).annotate_length()
+        return qs.exclude(timeline__id__in=blacklist_match_ids)
 
     def interested_kills(self):
-        return (self.get_queryset().filter(length__in=[3, 4, 5])
-                                   .annotate_avg()
-                                   .annotate_rank().order_by('rank'))
+        return self.get_queryset().filter(length=5)
 
     def not_recorded(self):
         recorded_ids = KillReplay.objects.values('event__id')
