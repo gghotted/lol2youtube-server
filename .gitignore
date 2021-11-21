@@ -5,3 +5,6 @@ venv
 .vscode
 .secrets
 **/media
+db
+media-old
+**/staticfiles

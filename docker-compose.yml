@@ -1,0 +1,46 @@
+version: "2"
+services:
+    nginx:
+        image: nginx:latest
+        container_name: nginx
+        ports:
+            - "80:80"
+        environment:
+            NGINX_ENVSUBST_TEMPLATE_SUFFIX: ".conf"
+            SERVER_NAME: ${NGINX_SERVER_NAME}
+        volumes:
+            - ./nginx:/etc/nginx/conf.d/
+            - ./data_server/staticfiles:/staticfiles
+            - ./data_server/media:/media
+        depends_on:
+            - web
+
+    web:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: web
+        command: bash -c "cd data_server && ./entrypoint.sh"
+        volumes:
+            - ./data_server:/data_server
+        depends_on:
+            db:
+                condition: service_healthy
+
+    db:
+        image: mariadb:latest
+        container_name: mysql
+        ports:
+            - "3306:3306"
+        environment:
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        volumes:
+            - ./db/data:/var/lib/mysql
+        healthcheck:
+            test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+            interval: 2s
+            timeout: 20s
+            retries: 10
