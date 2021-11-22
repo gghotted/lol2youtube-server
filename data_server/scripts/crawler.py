@@ -1,6 +1,7 @@
 import signal
 
 from match.models import Match
+from raw_data.models import JsonData
 from summoner.models import Summoner
 
 sigint_received = False
@@ -12,7 +13,7 @@ def sigint_handler(sig, frame):
     print('사이클 완료후 종료됩니다.')
 
 
-signal.signal(signal.SIGINT, sigint_handler)
+# signal.signal(signal.SIGINT, sigint_handler)
 
 
 class MatchCrawler:
@@ -20,8 +21,18 @@ class MatchCrawler:
         self.break_count = break_count
 
     def __call__(self):
+        self._preprocess()
         while self._is_continuable():
             self._loop()
+
+    def _delete_invalid_data(self, queryset, name):
+        count = queryset.filter(parse_success=False).delete()[0]
+        print(f'유효하지 않은 {name} {count}개를 삭제했습니다.')
+
+    def _preprocess(self):
+        self._delete_invalid_data(JsonData.objects.matches(), '매치')
+        self._delete_invalid_data(JsonData.objects.summoners(), '소환사')
+        self._delete_invalid_data(JsonData.objects.timelines(), '타임라인')
 
     def _loop(self):
         summoner = Summoner.objects.get_to_update()
@@ -33,5 +44,3 @@ class MatchCrawler:
 
 def run():
     MatchCrawler()()
-
-

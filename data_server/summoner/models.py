@@ -4,6 +4,7 @@ from common.models import BaseManager, BaseModel
 from django.conf import settings
 from django.db import models
 from django.db.models import Max
+from raw_data.models import JsonData
 from raw_data.riot_api import MatchListAPI, SummonerAPI
 
 
@@ -27,7 +28,7 @@ class Summoner(BaseModel):
     '''
     이 서비스의 핵심은 match data 이므로, puuid만 저장하고 따로 api는 요청하지 않음.
     '''
-    json = models.ForeignKey('raw_data.JsonData', models.DO_NOTHING, null=True, blank=True)
+    json = models.ForeignKey('raw_data.JsonData', models.CASCADE, null=True, blank=True)
     puuid = models.CharField(max_length=128, unique=True)
     name = models.CharField(max_length=64, blank=True)
     match_updated_at = models.DateTimeField(default=datetime.min)
@@ -47,7 +48,13 @@ class Summoner(BaseModel):
         from match.models import Match
 
         match_list = MatchListAPI(self.puuid)().json
-        Match.objects.creates_or_get_from_api(match_id=match_list)
+        matches = Match.objects.creates_or_get_from_api(match_id=match_list)
+
+        created_jsons = matches.values('json').union(
+            matches.values('timeline__json'),
+            matches.values('participants__summoner__json'),
+        )
+        JsonData.objects.filter(id__in=created_jsons).update(parse_success=True)
 
         updated_self = Summoner.objects.get(puuid=self.puuid)
         updated_self.match_updated_at = datetime.now()

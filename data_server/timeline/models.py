@@ -4,7 +4,7 @@ from raw_data.riot_api import TimelineAPI
 
 
 class Timeline(BaseModel):
-    json = models.ForeignKey('raw_data.JsonData', models.DO_NOTHING)
+    json = models.ForeignKey('raw_data.JsonData', models.CASCADE)
     id = models.CharField(primary_key=True, max_length=64)
     match = models.OneToOneField('match.Match', models.CASCADE, related_name='timeline')
 

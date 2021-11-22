@@ -1,5 +1,6 @@
 from common.models import BaseModel
 from django.db import models
+from django.db.models.expressions import F
 from easydict import EasyDict
 
 
@@ -28,6 +29,7 @@ class APICallInfo(BaseModel):
 class JsonData(BaseModel):
     data = models.JSONField()
     api_info = models.OneToOneField(APICallInfo, models.CASCADE, null=True)
+    parse_success = models.BooleanField(default=False)
     objects = JsonDataManager()
 
     @property
