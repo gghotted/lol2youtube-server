@@ -57,7 +57,7 @@ class APIResource:
             raise JsonDataAlreadyExist('이미 존재하는 데이터 입니다.')
 
     def _retry_call(self):
-        wait_time = int(self.response.headers['retry-after']) + 1
+        wait_time = int(self.response.headers['retry-after']) + 5
         print(f'rate limits에 걸려 {wait_time}초 슬립합니다.')
         time.sleep(wait_time)
         return self()
