@@ -1,5 +1,6 @@
 from common.models import BaseModel
 from django.db import models
+from django.db.models.aggregates import Max
 from django.db.models.expressions import F
 from easydict import EasyDict
 
@@ -9,7 +10,10 @@ class JsonDataManager(models.Manager):
         return self.get_queryset().filter(api_info__type='summoner')
 
     def matches(self):
-        return self.get_queryset().filter(api_info__type='match')
+        return (self.get_queryset()
+                    .filter(api_info__type='match')
+                    .annotate(game_creation=Max('matches__game_creation'))
+                    .annotate(max_kill_length=Max('matches__timeline__championkills__length')))
 
     def timelines(self):
         return self.get_queryset().filter(api_info__type='timeline')

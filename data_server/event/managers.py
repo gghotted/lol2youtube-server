@@ -47,6 +47,14 @@ class ChampionKillQuerySet(models.QuerySet):
             rank=Window(DenseRank(), order_by=F('interested_score').desc())
         )
 
+    def not_recorded(self):
+        recorded_ids = KillReplay.objects.values('event__id')
+        return self.exclude(id__in=recorded_ids)
+
+    def recorded(self):
+        recorded_ids = KillReplay.objects.values('event__id')
+        return self.filter(id__in=recorded_ids)
+
     def get_avg_min_max(self):
         return self.aggregate(
             Min('avg_damage'), Max('avg_damage'),

@@ -72,6 +72,7 @@ class NotImplementedEvent(Event):
 
 
 class ChampionKill(Event):
+    timeline = models.ForeignKey('timeline.Timeline', models.CASCADE, related_name='championkills')
     # 오브젝트에 의한 킬이 있으므로, null, blank = True
     killer = models.ForeignKey('match.Participant', models.CASCADE, related_name='kill_events', null=True, blank=True)
     victim = models.ForeignKey('match.Participant', models.CASCADE, related_name='death_events')

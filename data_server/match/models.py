@@ -15,7 +15,7 @@ class MatchManager(BaseManager):
 
 
 class Match(BaseModel):
-    json = models.ForeignKey('raw_data.JsonData', models.CASCADE)
+    json = models.ForeignKey('raw_data.JsonData', models.CASCADE, related_name='matches')
     id = models.CharField(primary_key=True, max_length=64)
     game_creation = models.DateTimeField()
     has_pentakill = models.BooleanField()
