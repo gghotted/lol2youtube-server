@@ -4,6 +4,7 @@ from common.models import BaseManager, BaseModel
 from django.conf import settings
 from django.db import models
 from django.db.models import Max
+from django.db.models.expressions import F
 from raw_data.models import JsonData
 from raw_data.riot_api import MatchListAPI, SummonerAPI
 
@@ -21,7 +22,7 @@ class SummonerManager(BaseManager):
         boundary_time = datetime.now() - settings.SUMMONER_MIN_UPDATE_TIME
         return self.filter(match_updated_at__lte=boundary_time) \
                    .annotate(recent_match_at=Max('participants__match__game_creation')) \
-                   .order_by('-recent_match_at', 'match_updated_at')
+                   .order_by(F('recent_match_at').desc(nulls_last=True), 'match_updated_at')
 
 
 class Summoner(BaseModel):
