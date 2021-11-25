@@ -1,5 +1,7 @@
 import signal
 
+from data_cleaner.json_data import JsonDataCleaner
+from django.conf import settings
 from match.models import Match
 from raw_data.models import JsonData
 from summoner.models import Summoner
@@ -19,11 +21,16 @@ def sigint_handler(sig, frame):
 class MatchCrawler:
     def __init__(self, break_count=float('inf')):
         self.break_count = break_count
+        self.loop_count = 0
+        self.clean_data_loop_count = settings.CLEAN_DATA_LOOP_COUNT
 
     def __call__(self):
         self._preprocess()
         while self._is_continuable():
+            if self.loop_count % self.clean_data_loop_count == 0:
+                JsonDataCleaner().clean()
             self._loop()
+            self.loop_count += 1
 
     def _delete_invalid_data(self, queryset, name):
         count = queryset.filter(parse_success=False).delete()[0]
