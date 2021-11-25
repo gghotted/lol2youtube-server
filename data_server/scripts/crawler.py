@@ -1,4 +1,5 @@
 import signal
+import time
 
 from data_cleaner.json_data import JsonDataCleaner
 from django.conf import settings
@@ -49,5 +50,12 @@ class MatchCrawler:
         return (Match.objects.count() < self.break_count) and (sigint_received == False)
 
 
-def run():
-    MatchCrawler()()
+def run(try_count=0):
+    if try_count == 5:
+        return
+    try:
+        MatchCrawler()()
+    except Exception as e:
+        print(e)
+        time.sleep(5)
+        run(try_count=try_count + 1)
