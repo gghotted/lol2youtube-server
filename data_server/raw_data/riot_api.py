@@ -2,6 +2,7 @@ import time
 
 import requests
 from django.conf import settings
+from requests.exceptions import ConnectionError
 
 from raw_data.exceptions import JsonDataAlreadyExist
 from raw_data.models import APICallInfo, JsonData
@@ -33,10 +34,15 @@ class APIResource:
     def headers(self):
         return {'X-Riot-Token': api_key}
 
-    def get(self, **kwargs):
-        kwargs.setdefault('headers', {})
-        kwargs['headers'].update(self.headers)
-        return requests.get(self.url, **kwargs)
+    def get(self, try_count=0, **kwargs):
+        try:
+            kwargs.setdefault('headers', {})
+            kwargs['headers'].update(self.headers)
+            return requests.get(self.url, **kwargs)
+        except ConnectionError:
+            if try_count == 5:
+                raise ConnectionError
+            return self.get(try_count=try_count + 1, **kwargs)
 
     def __call__(self):
         self._check_already_exist()
