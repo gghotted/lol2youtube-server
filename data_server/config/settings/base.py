@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'timeline',
     'event',
     'replay',
+    'youtube',
     'debug_toolbar',
 ]
 
