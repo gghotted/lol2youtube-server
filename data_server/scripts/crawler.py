@@ -50,12 +50,10 @@ class MatchCrawler:
         return (Match.objects.count() < self.break_count) and (sigint_received == False)
 
 
-def run(try_count=0):
-    if try_count == 5:
-        return
+def run():
     try:
         MatchCrawler()()
     except Exception as e:
-        print(e)
+        print('crawler error', e)
         time.sleep(5)
-        run(try_count=try_count + 1)
+        run()
