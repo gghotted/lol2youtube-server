@@ -22,6 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('replay/', include('replay.urls')),
     path('event/', include('event.urls')),
+    path('youtube/', include('youtube.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

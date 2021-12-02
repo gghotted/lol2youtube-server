@@ -87,6 +87,20 @@ class ChampionKill(Event):
     class Meta:
         ordering = ['time']
 
+    def sum_field_sequence(self, field):
+        return sum(
+            getattr(kill, field)
+            for kill in self.sequence.all()
+        )
+
+    @property
+    def total_damage(self):
+        return self.sum_field_sequence('damage')
+
+    @property
+    def total_damage_contribution(self):
+        return self.sum_field_sequence('damage_contribution') / self.length
+
     @staticmethod
     def parse_killer(data):
         return data.timeline.match.participants.filter(index=data.killerId).first()

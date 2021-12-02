@@ -75,6 +75,9 @@ class Participant(BaseModel):
     index = models.PositiveIntegerField()
     champion = models.CharField(max_length=64)
 
+    def get_champion(self):
+        return str(self.champion)
+
     @staticmethod
     def parse_summoner(data):
         return Summoner.objects.update_or_create(puuid=data.puuid, defaults={'name': data.summonerName})[0]
