@@ -12,7 +12,8 @@ class KillReplayAdmin(admin.ModelAdmin):
         'id',
         'created',
         'video',
-        'chennel',
+        'channel_group',
+        'channel',
         'url',
     )
     fields = (
@@ -40,7 +41,13 @@ class KillReplayAdmin(admin.ModelAdmin):
             f'</video>'
         )
 
-    def chennel(self, obj):
+    def channel_group(self, obj):
+        try:
+            return obj.file.upload_info.channel_group
+        except:
+            return None
+
+    def channel(self, obj):
         try:
             return obj.file.upload_info.channel
         except:

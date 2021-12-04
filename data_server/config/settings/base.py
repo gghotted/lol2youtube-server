@@ -14,6 +14,8 @@ import json
 from datetime import timedelta
 from pathlib import Path
 
+from google.oauth2 import service_account
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 ROOT_DIR = BASE_DIR.parent
@@ -52,6 +54,7 @@ INSTALLED_APPS = [
     'replay',
     'youtube',
     'debug_toolbar',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -125,14 +128,6 @@ TIME_ZONE = 'Asia/Seoul'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
-
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-MEDIA_URL = '/media/'
-
-MEDIA_ROOT = BASE_DIR / 'media'
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
@@ -168,3 +163,19 @@ YOUTUBE_CLIENT_ID = COMMON_SECRET['youtube_client_id']
 YOUTUBE_CLIENT_SECRET = COMMON_SECRET['youtube_client_secret']
 
 YOUTUBE_REDIRECT_URI = COMMON_SECRET['youtube_redirect_uri']
+
+DEFAULT_FILE_STORAGE = 'config.storage_backends.GoogleCloudMediaStorage'
+
+STATICFILES_STORAGE = 'config.storage_backends.GoogleCloudStaticStorage'
+
+GS_MEDIA_BUCKET_NAME  = 'lol2youtube'
+
+GS_STATIC_BUCKET_NAME = 'lol2youtube-static'
+
+GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+    SECRET_DIR / 'lol2youtube-serviceaccount.json'
+)
+
+MEDIA_URL = f'https://storage.cloud.google.com/{GS_MEDIA_BUCKET_NAME}/'
+
+STATIC_URL = f'https://storage.cloud.google.com/{GS_STATIC_BUCKET_NAME}/'

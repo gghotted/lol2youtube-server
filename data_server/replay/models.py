@@ -52,7 +52,7 @@ class ReplaySource(BaseModel):
 class KillReplay(ReplaySource):
     event = models.ForeignKey('event.ChampionKill', on_delete=models.DO_NOTHING, related_name='killreplay')
 
-    title_format = '#펜타킬 #{killer} #롤 #short'
+    title_format = '#펜타킬 #{killer} #롤 #shorts'
     description_format = '\n'.join([
         '펜타킬 총 데미지: {total_damage}',
         '펜타킬 평균 데미지 기여도: {total_damage_contribution:.2}',

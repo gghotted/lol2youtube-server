@@ -44,6 +44,15 @@ class UploadInfo(BaseModel):
 
 
     def upload(self):
+        # from django.core.files.storage import default_storage
+        # from replay.models import ReplayFile
+        # f = ReplayFile.objects.first()
+        # print(default_storage.exists(f.file.name))
+        # opened = default_storage.open(f.file.name, 'rb')
+        # named_file = opened.get_named_file()
+        # print(named_file)
+
+
         self.channel = self.channel_group.get_channel_to_upload()
         youtube = get_authenticated_service(
             self.channel.access_token,
@@ -53,7 +62,7 @@ class UploadInfo(BaseModel):
         )
         upload_request = get_upload_request(
             youtube,
-            self.file.file.path, # need temporary file?
+            self.file.file.file.get_named_file().name,
             self.title,
             self.description,
             self.category_id,

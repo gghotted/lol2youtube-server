@@ -1,6 +1,7 @@
 import time
 
 import schedule
+from django.conf import settings
 from youtube.models import UploadInfo
 
 
@@ -11,7 +12,7 @@ def upload():
 
 
 def run():
-    schedule.every(10).minutes.do(upload)
+    schedule.every(1).minutes.do(upload)
     while True:
         schedule.run_pending()
         time.sleep(1)
