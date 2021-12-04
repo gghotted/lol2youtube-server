@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'youtube',
     'debug_toolbar',
     'storages',
+    'champion',
 ]
 
 MIDDLEWARE = [
