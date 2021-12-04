@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from champion.models import Champion
 from common.models import BaseManager, BaseModel
 from django.db import models
 from django.db.models import F
@@ -84,7 +85,7 @@ class Participant(BaseModel):
 
     @staticmethod
     def parse_champion(data):
-        return data.championName
+        return Champion.objects.get_or_create(eng_name=data.championName)[0]
 
     @staticmethod
     def parse_index(data):
