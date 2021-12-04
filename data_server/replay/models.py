@@ -19,6 +19,7 @@ class ReplayFile(BaseModel):
 
 class ReplaySource(BaseModel):
     file = models.OneToOneField('replay.ReplayFile', models.DO_NOTHING, related_name='replay')
+    link = models.URLField(blank=True)
     objects = ReplaySourceManager()
 
     class Meta:
