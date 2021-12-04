@@ -13,6 +13,9 @@ class ChampionAdmin(admin.ModelAdmin):
         'pentakill_count',
     )
 
+    def get_ordering(self, request):
+        return ('-pentakill_count', )
+
     @admin.display(ordering='match_count')
     def match_count(self, obj):
         return obj.match_count
