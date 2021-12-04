@@ -9,7 +9,11 @@ class NotRecordedChampionKillDetailView(RetrieveAPIView):
     queryset = ChampionKill.objects.not_recorded()
 
     def get_object(self):
-        return self.get_queryset().first()
+        killer = self.request.GET.get('killer')
+        qs = self.get_queryset()
+        if killer:
+            qs = qs.filter(killer__champion__eng_name=killer)
+        return qs.first()
 
     def get_serializer(self, kill_event, **kwargs):
         serializer_class = self.get_serializer_class()
