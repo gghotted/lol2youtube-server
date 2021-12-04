@@ -73,8 +73,7 @@ class Participant(BaseModel):
     match = models.ForeignKey(Match, models.CASCADE, related_name='participants')
     summoner = models.ForeignKey('summoner.Summoner', models.DO_NOTHING, related_name='participants')
     index = models.PositiveIntegerField()
-    champion = models.CharField(max_length=64)
-    _champion = models.ForeignKey('champion.Champion', models.DO_NOTHING, null=True, related_name='participants')
+    champion = models.ForeignKey('champion.Champion', models.DO_NOTHING, related_name='participants')
 
     def get_champion(self):
         return str(self.champion)
