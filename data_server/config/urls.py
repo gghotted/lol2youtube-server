@@ -23,6 +23,7 @@ urlpatterns = [
     path('replay/', include('replay.urls')),
     path('event/', include('event.urls')),
     path('youtube/', include('youtube.urls')),
+    path('champion/', include('champion.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

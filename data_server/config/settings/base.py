@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'storages',
     'champion',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
