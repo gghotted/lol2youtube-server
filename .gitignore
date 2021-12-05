@@ -9,3 +9,4 @@ db
 media-old
 **/staticfiles
 pg
+**/*.log
