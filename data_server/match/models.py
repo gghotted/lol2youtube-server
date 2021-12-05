@@ -77,7 +77,7 @@ class Participant(BaseModel):
     champion = models.ForeignKey('champion.Champion', models.DO_NOTHING, related_name='participants')
 
     def get_champion(self):
-        return str(self.champion)
+        return self.champion.eng_name
 
     @staticmethod
     def parse_summoner(data):
