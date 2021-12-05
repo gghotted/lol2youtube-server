@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from replay.models import KillReplay, ReplayBlackList, ReplayFile
+from replay.models import KillReplay, ReplayBlackList
 
 
 class BlackListCreateCreateSerializer(serializers.ModelSerializer):
@@ -13,9 +13,3 @@ class KillReplayCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = KillReplay
         fields = ('event', )
-
-
-class KillReplayUpdateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = KillReplay
-        fields = ('link', )

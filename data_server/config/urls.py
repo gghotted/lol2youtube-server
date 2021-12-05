@@ -22,7 +22,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('replay/', include('replay.urls')),
     path('event/', include('event.urls')),
-    path('youtube/', include('youtube.urls')),
     path('champion/', include('champion.urls')),
 ]
 

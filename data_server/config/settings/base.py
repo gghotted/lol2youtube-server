@@ -52,7 +52,6 @@ INSTALLED_APPS = [
     'timeline',
     'event',
     'replay',
-    'youtube',
     'debug_toolbar',
     'storages',
     'champion',
@@ -160,24 +159,10 @@ JSON_DATA_REMAIN_COUNT = 100
 
 CLEAN_DATA_LOOP_COUNT = 1
 
-YOUTUBE_CLIENT_ID = COMMON_SECRET['youtube_client_id']
+STATIC_URL = '/static/'
 
-YOUTUBE_CLIENT_SECRET = COMMON_SECRET['youtube_client_secret']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-YOUTUBE_REDIRECT_URI = COMMON_SECRET['youtube_redirect_uri']
+MEDIA_URL = '/media/'
 
-DEFAULT_FILE_STORAGE = 'config.storage_backends.GoogleCloudMediaStorage'
-
-STATICFILES_STORAGE = 'config.storage_backends.GoogleCloudStaticStorage'
-
-GS_MEDIA_BUCKET_NAME  = 'lol2youtube'
-
-GS_STATIC_BUCKET_NAME = 'lol2youtube-static'
-
-GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    SECRET_DIR / 'lol2youtube-serviceaccount.json'
-)
-
-MEDIA_URL = f'https://storage.cloud.google.com/{GS_MEDIA_BUCKET_NAME}/'
-
-STATIC_URL = f'https://storage.cloud.google.com/{GS_STATIC_BUCKET_NAME}/'
+MEDIA_ROOT = BASE_DIR / 'media'

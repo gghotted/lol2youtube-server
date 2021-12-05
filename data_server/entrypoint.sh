@@ -1,6 +1,6 @@
 export DJANGO_SETTINGS_MODULE=config.settings.deploy
 
-python manage.py makemigrations event match raw_data replay summoner timeline youtube champion && \
+python manage.py makemigrations event match raw_data replay summoner timeline champion && \
 python manage.py migrate && \
 echo yes | python manage.py collectstatic && \
 

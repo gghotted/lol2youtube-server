@@ -10,11 +10,3 @@ class BlackListCreateView(CreateAPIView):
 
 class KillReplayCreateView(CreateAPIView):
     serializer_class = serializers.KillReplayCreateSerializer
-
-
-class KillReplayUpdateView(UpdateAPIView):
-    serializer_class = serializers.KillReplayUpdateSerializer
-
-    def get_object(self):
-        match = self.kwargs.get('match')
-        return KillReplay.objects.get(match=match)
