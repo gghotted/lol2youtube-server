@@ -35,9 +35,11 @@ class KillReplayAdmin(admin.ModelAdmin):
 
     @admin.display()
     def video(self, obj):
+        if not obj.file:
+            return None
         return mark_safe(
             f'<video controls width="400" preload="none">'
-            f'<source src="{obj.file.file.url}" type="video/webm">'
+            f'<source src="{obj.file.file.url}" type="video/mp4">'
             f'</video>'
         )
 
