@@ -15,6 +15,7 @@ class ReplayFile(BaseModel):
 
 
 class ReplaySource(BaseModel):
+    org_file = models.OneToOneField('replay.ReplayFile', models.DO_NOTHING, related_name='org_replay', null=True)
     file = models.OneToOneField('replay.ReplayFile', models.DO_NOTHING, related_name='replay', null=True)
     objects = ReplaySourceManager()
 
@@ -37,8 +38,16 @@ class ReplaySource(BaseModel):
         )
 
 
+class LongReplaySource(BaseModel):
+    file = models.OneToOneField('replay.ReplayFile', models.DO_NOTHING, related_name='long_replay', null=True)
+
+    class Meta:
+        abstract = True
+
+
 class KillReplay(ReplaySource):
     event = models.ForeignKey('event.ChampionKill', on_delete=models.DO_NOTHING, related_name='killreplay')
+    long_file = models.ForeignKey('replay.KillLongReplay', on_delete=models.DO_NOTHING, related_name='short_files', null=True)
 
     title_format = '#PentaKill #{killer} #LOL #shorts'
     description_format = '\n'.join([
@@ -58,3 +67,7 @@ class KillReplay(ReplaySource):
             total_damage=self.event.total_damage,
             total_damage_contribution=self.event.total_damage_contribution,
         )
+
+
+class KillLongReplay(LongReplaySource):
+    pass
