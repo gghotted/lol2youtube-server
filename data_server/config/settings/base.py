@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'storages',
     'champion',
     'rest_framework',
+    'youtube',
 ]
 
 MIDDLEWARE = [
