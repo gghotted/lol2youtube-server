@@ -26,7 +26,7 @@ class MatchCrawler:
         self.clean_data_loop_count = settings.CLEAN_DATA_LOOP_COUNT
 
     def __call__(self):
-        # self._preprocess()
+        self._preprocess()
         while self._is_continuable():
             if self.loop_count % self.clean_data_loop_count == 0:
                 JsonDataCleaner().clean()
