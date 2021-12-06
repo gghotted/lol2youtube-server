@@ -60,16 +60,3 @@ class KillReplayAdmin(admin.ModelAdmin):
             return mark_safe('<a href="{url}">{url}</a>'.format(url=obj.file.upload_info.url))
         except:
             return None
-
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-    @admin.action(description='"업로드 대기중"으로 상태 변경')
-    def set_wait_upload(self, request, queryset):
-        selected = set(queryset.values_list('id', flat=True))
-        all = set(KillReplay.objects.non_status().values_list('id', flat=True))
-        if len(selected - all) != 0:
-            self.message_user(request, '상태 없음이 아닌 데이터가 포함되었습니다.', messages.ERROR)
-            return
-        for obj in queryset:
-            obj.set_wait_upload()
