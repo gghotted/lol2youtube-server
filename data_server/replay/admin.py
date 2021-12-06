@@ -12,17 +12,21 @@ class KillReplayAdmin(admin.ModelAdmin):
         'id',
         'created',
         'video',
-        'channel_group',
-        'channel',
+        'title',
         'url',
     )
     fields = (
         'id',
+        'file',
+        'org_file',
     )
     readonly_fields = (
+        'id',
+        'file',
+        'org_file',
         'event',
     )
-    list_per_page = 10
+    list_per_page = 5
     list_filter = (
         KillReplayFilter,
     )
@@ -31,6 +35,7 @@ class KillReplayAdmin(admin.ModelAdmin):
     )
     actions = (
         'blacklist_queryset',
+        'set_wait_upload',
     )
 
     @admin.display()
@@ -43,21 +48,15 @@ class KillReplayAdmin(admin.ModelAdmin):
             f'</video>'
         )
 
-    def channel_group(self, obj):
-        try:
-            return obj.file.upload_info.channel_group
-        except:
-            return None
-
-    def channel(self, obj):
-        try:
-            return obj.file.upload_info.channel
-        except:
-            return None
-
     def url(self, obj):
         try:
             return mark_safe('<a href="{url}">{url}</a>'.format(url=obj.file.upload_info.url))
+        except:
+            return None
+
+    def title(self, obj):
+        try:
+            return obj.file.upload_info.title
         except:
             return None
 
@@ -90,4 +89,14 @@ class KillReplayAdmin(admin.ModelAdmin):
         '''
         for obj in queryset:
             obj.to_blacklist()
+
+    @admin.action(description='"업로드 대기중"으로 상태 변경')
+    def set_wait_upload(self, request, queryset):
+        selected = set(queryset.values_list('id', flat=True))
+        all = set(KillReplay.objects.non_status().values_list('id', flat=True))
+        if len(selected - all) != 0:
+            self.message_user(request, '상태 없음이 아닌 데이터가 포함되었습니다.', messages.ERROR)
+            return
+        for obj in queryset:
+            obj.set_wait_upload()
 
