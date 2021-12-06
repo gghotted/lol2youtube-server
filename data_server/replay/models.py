@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from common.models import BaseModel
 from django.db import models
 from youtube.models import UploadInfo
@@ -12,6 +14,12 @@ class ReplayBlackList(BaseModel):
 
 class ReplayFile(BaseModel):
     file = models.FileField(upload_to='replay/%Y/%m/%d')
+
+    def file_exist(self):
+        return Path(self.file.path).exists()
+
+    def on_predelete(self):
+        Path(self.file.path).unlink()
 
 
 class ReplaySource(BaseModel):
@@ -37,12 +45,30 @@ class ReplaySource(BaseModel):
             description=self.description,
         )
 
+    def deleteable(self):
+        deleteable = True
+        if self.org_file:
+            deleteable &= self.org_file.file_exist()
+        if self.file:
+            deleteable &= self.file.file_exist()
+        return deleteable
+
+    def on_predelete(self):
+        if self.org_file:
+            self.org_file.delete()
+        if self.file:
+            self.file.delete()
+
 
 class LongReplaySource(BaseModel):
     file = models.OneToOneField('replay.ReplayFile', models.DO_NOTHING, related_name='long_replay', null=True)
 
     class Meta:
         abstract = True
+
+    def on_predelete(self):
+        if self.file:
+            self.file.delete()
 
 
 class KillReplay(ReplaySource):
@@ -67,6 +93,17 @@ class KillReplay(ReplaySource):
             total_damage=self.event.total_damage,
             total_damage_contribution=self.event.total_damage_contribution,
         )
+
+    def to_blacklist(self, msg):
+        '''
+        블랙리스트에 추가 후 삭제
+        '''
+        match = self.event.timeline.match
+        ReplayBlackList.objects.create(
+            match=match,
+            msg=msg
+        )
+        self.delete()
 
 
 class KillLongReplay(LongReplaySource):

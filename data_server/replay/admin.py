@@ -30,7 +30,7 @@ class KillReplayAdmin(admin.ModelAdmin):
         '-created',
     )
     actions = (
-        'set_wait_upload',
+        'blacklist_queryset',
     )
 
     @admin.display()
@@ -60,3 +60,34 @@ class KillReplayAdmin(admin.ModelAdmin):
             return mark_safe('<a href="{url}">{url}</a>'.format(url=obj.file.upload_info.url))
         except:
             return None
+
+    def delete_model(self, request, obj):
+        if not obj.deleteable():
+            self.message_user(request, f'{obj}를 삭제할 수 없습니다', messages.ERROR)
+            return
+        obj.delete()
+        self.message_user(request, f'{obj}를 삭제했습니다')
+        
+
+    def delete_queryset(self, request, queryset):
+        '''
+        삭제 후 다시 크롤링될 수 있습니다.
+        '''
+        for obj in queryset:
+            self.delete_model(request, obj)
+
+    def blacklist_model(self, request, obj):
+        if not obj.deleteable():
+            self.message_user(request, f'{obj}를 삭제할 수 없습니다', messages.ERROR)
+            return
+        obj.to_blacklist()
+        self.message_user(request, f'{obj}를 삭제했습니다')
+
+    @admin.action(description='삭제 및 블랙리스트에 등록')
+    def blacklist_queryset(self, request, queryset):
+        '''
+        삭제 후 다시 크롤링될 수 없습니다.
+        '''
+        for obj in queryset:
+            obj.to_blacklist()
+
