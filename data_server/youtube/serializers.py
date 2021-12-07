@@ -17,3 +17,11 @@ class UploadInfoSerializer(serializers.ModelSerializer):
     
     def get_filepath(self, obj):
         return obj.file.file.path
+
+
+class UploadInfoUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UploadInfo
+        fields = (
+            'url',
+        )
