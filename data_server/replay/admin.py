@@ -11,6 +11,7 @@ class KillReplayAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'created',
+        'event',
         'video',
         'title',
         'url',
@@ -19,6 +20,7 @@ class KillReplayAdmin(admin.ModelAdmin):
         'id',
         'file',
         'org_file',
+        'event',
     )
     readonly_fields = (
         'id',

@@ -85,7 +85,7 @@ class ChampionKill(Event):
     objects = ChampionKillManager()
 
     class Meta:
-        ordering = ['time']
+        ordering = ['id']
 
     def sum_field_sequence(self, field):
         return sum(
