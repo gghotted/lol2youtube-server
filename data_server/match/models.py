@@ -15,6 +15,11 @@ class MatchManager(BaseManager):
             self.create_from_api(match_id=match_id)
 
 
+class Version(BaseModel):
+    str = models.CharField(max_length=64)
+    useable = models.BooleanField(default=True)
+
+
 class Match(BaseModel):
     json = models.ForeignKey('raw_data.JsonData', models.CASCADE, related_name='matches')
     id = models.CharField(primary_key=True, max_length=64)
@@ -23,9 +28,14 @@ class Match(BaseModel):
     has_quadrakill = models.BooleanField()
     has_triplekill = models.BooleanField()
     queue_id = models.PositiveIntegerField()
+    version = models.ForeignKey('match.Version', models.DO_NOTHING, related_name='matches', null=True)
 
     objects = MatchManager()
     api_call_class = MatchAPI
+
+    @staticmethod
+    def parse_version(data):
+        return Version.objects.get_or_create(str=data.info.gameVersion)[0]
 
     @staticmethod
     def parse_id(data):
