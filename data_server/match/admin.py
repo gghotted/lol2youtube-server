@@ -9,8 +9,10 @@ class VersionAdmin(admin.ModelAdmin):
         'created',
         'useable',
         'str',
+        'first_game_creation',
         'last_game_creation',
         'match_count',
+        # 'pentakill_count',
     )
     list_editable = (
         'useable',
@@ -20,8 +22,14 @@ class VersionAdmin(admin.ModelAdmin):
         '-str',
     )
 
+    def first_game_creation(self, obj):
+        return obj.first_game_creation
+
     def last_game_creation(self, obj):
         return obj.last_game_creation
 
     def match_count(self, obj):
         return obj.match_count
+
+    # def pentakill_count(self, obj):
+    #     return obj.pentakill_count

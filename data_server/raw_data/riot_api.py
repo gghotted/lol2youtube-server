@@ -104,10 +104,17 @@ class MatchListAPI(APIResource):
 
     @property
     def endpoint(self):
+        from match.models import Version
+
+        start_time = (int(
+            Version.objects.latest_version()
+            .matches.order_by('game_creation')
+            .first().game_creation.timestamp()
+        ))
         queue = settings.MATCH_LIST_QUEUE_ID
         count = settings.MATCH_LIST_COUNT
         return (f'/lol/match/v5/matches/by-puuid/{self.puuid}/ids'
-                f'?queue={queue}&count={count}')
+                f'?queue={queue}&count={count}&startTime={start_time}')
 
 
 class TimelineAPI(APIResource):

@@ -1,5 +1,6 @@
 from common.models import BaseManager
 from django.db import models
+from match.models import Version
 from replay.models import KillReplay, ReplayBlackList
 
 
@@ -21,7 +22,10 @@ class ChampionKillManager(BaseManager):
     def get_queryset(self):
         qs = ChampionKillQuerySet(self.model, using=self._db)
         blacklist_match_ids = ReplayBlackList.objects.values('match__id')
-        return qs.exclude(timeline__id__in=blacklist_match_ids)
+        return (qs
+            .exclude(timeline__id__in=blacklist_match_ids)
+            .filter(timeline__match__version__useable=True)
+        )
 
     def not_recorded_pentakills(self):
         return self.get_queryset().pentakills().not_recorded()

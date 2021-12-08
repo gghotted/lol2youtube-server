@@ -46,7 +46,8 @@ class DataCleaner:
 
     def clean(self) -> None:
         qs = self.get_final_queryset()
-        self.write_log(*qs.delete())
+        for _qs in qs.iterator(chunk_size=10):
+            self.write_log(*_qs.delete())
 
     @classmethod
     def write_log(cls, deleted: int, detail: Dict[str, int]) -> None:
