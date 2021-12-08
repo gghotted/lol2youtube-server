@@ -6,7 +6,7 @@ from event.serializers import NotRecordedChampionKillSerializer
 
 class NotRecordedChampionKillDetailView(RetrieveAPIView):
     serializer_class = NotRecordedChampionKillSerializer
-    queryset = ChampionKill.objects.not_recorded()
+    queryset = ChampionKill.objects.not_recorded_pentakills()
 
     def get_object(self):
         killer = self.request.GET.get('killer')
