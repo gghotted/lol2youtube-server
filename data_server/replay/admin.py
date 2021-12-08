@@ -2,7 +2,7 @@ from django.contrib import admin, messages
 from django.utils.safestring import mark_safe
 
 from replay.filters import KillReplayFilter
-from replay.models import KillReplay
+from replay.models import KillReplay, ReplayBlackList
 
 
 @admin.register(KillReplay)
@@ -102,3 +102,13 @@ class KillReplayAdmin(admin.ModelAdmin):
         for obj in queryset:
             obj.set_wait_upload()
 
+
+@admin.register(ReplayBlackList)
+class BlackListAdmin(admin.ModelAdmin):
+    list_display = (
+        'created',
+        'msg',
+    )
+    ordering = (
+        '-created',
+    )
