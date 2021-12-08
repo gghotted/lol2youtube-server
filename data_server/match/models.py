@@ -7,6 +7,8 @@ from django.db.models import F
 from raw_data.riot_api import MatchAPI
 from summoner.models import Summoner
 
+from match.managers import VersionManger
+
 
 class MatchManager(BaseManager):
 
@@ -18,6 +20,7 @@ class MatchManager(BaseManager):
 class Version(BaseModel):
     str = models.CharField(max_length=64)
     useable = models.BooleanField(default=True)
+    objects = VersionManger()
 
 
 class Match(BaseModel):
