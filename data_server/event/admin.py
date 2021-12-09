@@ -13,6 +13,8 @@ class ChampionKillAdmin(admin.ModelAdmin):
     list_display = (
         'created',
         'length',
+        'duration',
+        'duration_score',
     )
     fields = (
         'killer',
