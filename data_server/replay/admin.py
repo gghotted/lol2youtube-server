@@ -40,6 +40,7 @@ class KillReplayAdmin(admin.ModelAdmin):
     actions = (
         'blacklist_queryset',
         'set_wait_upload',
+        'set_non_status',
     )
 
     @admin.display()
@@ -107,6 +108,16 @@ class KillReplayAdmin(admin.ModelAdmin):
             return
         for obj in queryset:
             obj.set_wait_upload()
+
+    @admin.action(description='"상태 없음"으로 상태 변경')
+    def set_non_status(self, request, queryset):
+        selected = set(queryset.values_list('id', flat=True))
+        wait_upload = set(KillReplay.objects.wait_upload().values_list('id', flat=True))
+        if len(selected - wait_upload) != 0:
+            self.message_user(request, '업로드 대기중이 아닌 데이터가 포함되었습니다.', messages.ERROR)
+            return
+        for obj in queryset:
+            obj.set_non_status()
 
 
 @admin.register(ReplayBlackList)

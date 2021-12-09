@@ -45,6 +45,9 @@ class ReplaySource(BaseModel):
             description=self.description,
         )
 
+    def set_non_status(self):
+        self.file.upload_info.delete()
+
     def deleteable(self):
         deleteable = True
         if self.org_file:
