@@ -9,6 +9,20 @@ from event.exceptions import (NotAddableKillSequenceException,
 from event.managers import ChampionKillManager
 
 
+class InterestScore(BaseModel):
+    VALUE_CHOICES = [(i, i) for i in range(1, 11)]
+    value = models.IntegerField(choices=VALUE_CHOICES)
+    lte_boundary = models.FloatField()
+    gt_boundary = models.FloatField()
+
+    class Meta:
+        abstract = True
+
+    @classmethod
+    def evaluate(cls, real_value):
+        return cls.objects.get(lte_boundary__lte=real_value, gt_boundary__gt=real_value)
+
+
 class Event(BaseModel):
     timeline = models.ForeignKey('timeline.Timeline', models.CASCADE)
     type = models.CharField(max_length=64)

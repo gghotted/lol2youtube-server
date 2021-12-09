@@ -4,6 +4,33 @@ from match.models import Version
 from replay.models import KillReplay, ReplayBlackList
 
 
+class InterestScoreManager(BaseManager):
+    def create_normalized_scores(self, min_boundary=float('-inf'), max_boundary=float('inf'), low_is_good=False):
+        if self.model.objects.exists():
+            raise Exception('이미 스코어 객체가 존재합니다')
+
+        target_model = self.model.target_model
+        target_field = self.model.target_field
+        values = (
+            target_model.objects
+            .order_by(target_field)
+            .values_list(target_field, flat=True)
+        )
+        indexes = range(0, len(values), round(len(values) / 9))
+        boundary_values = [min_boundary] + [values[i] for i in indexes] + [max_boundary]
+
+        scores = range(1, 11)
+        if low_is_good:
+            scores = reversed(scores)
+
+        for i, score in enumerate(scores):
+            self.create(
+                min_boundary=boundary_values[i],
+                max_boundary=boundary_values[i + 1],
+                value=score
+            )
+
+
 class ChampionKillQuerySet(models.QuerySet):
     def not_recorded(self):
         recorded_ids = KillReplay.objects.values('event__id')
