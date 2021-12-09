@@ -1,3 +1,6 @@
+from itertools import islice
+
+import numpy as np
 from common.models import BaseManager
 from django.apps import apps
 from django.db import models
@@ -29,7 +32,7 @@ class InterestScoreManager(BaseManager):
         score_qs = self.update_or_create_normalized_scores()
         target_model = apps.get_model(*self.model.target_model.split('.'))
         target_field = self.model.target_field
-        score_field = target_field + self.score_field_postfix
+        score_field = target_field + self.model.score_field_postfix
 
         for score_obj in score_qs:
             '''
@@ -50,7 +53,7 @@ class InterestScoreManager(BaseManager):
 
     def _get_scores(self):
         scores = range(1, 11)
-        if self.low_is_good:
+        if self.model.low_is_good:
             scores = reversed(scores)
         return scores
 
@@ -59,12 +62,17 @@ class InterestScoreManager(BaseManager):
         target_field = self.model.target_field
         values = (
             target_model.objects
+            .filter(**self.model.normalize_qs_filters)
             .order_by(target_field)
             .values_list(target_field, flat=True)
         )
-        indexes = range(0, len(values), round(len(values) / 9))
-        boundary_values = [float('-inf')] + [values[i] for i in indexes] + [float('inf')]
-        return boundary_values
+        boundary_values = []
+        for group in np.array_split(values, 9):
+            idx = int(len(group) / 2)
+            boundary_values.append(
+                group[idx]
+            )
+        return [float('-inf')] + boundary_values + [float('inf')]
 
 
 class ChampionKillQuerySet(models.QuerySet):

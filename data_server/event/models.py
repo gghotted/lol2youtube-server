@@ -6,7 +6,7 @@ from easydict import EasyDict
 
 from event.exceptions import (NotAddableKillSequenceException,
                               NotFoundPrevKillException)
-from event.managers import ChampionKillManager
+from event.managers import ChampionKillManager, InterestScoreManager
 
 
 class InterestScore(BaseModel):
@@ -22,10 +22,17 @@ class InterestScore(BaseModel):
     target_field = ''
     score_field_postfix = '_score'
 
+    '''
+    normalize에 사용할 쿼리셋 필터
+    '''
+    normalize_qs_filters = dict()
+
     VALUE_CHOICES = [(i, i) for i in range(1, 11)]
     value = models.IntegerField(choices=VALUE_CHOICES)
     lte_boundary = models.FloatField()
     gt_boundary = models.FloatField()
+
+    objects = InterestScoreManager()
 
     class Meta:
         abstract = True
@@ -39,6 +46,9 @@ class DurationScore(InterestScore):
     low_is_good = True
     target_model = 'event.ChampionKill'
     target_field = 'duration'
+    normalize_qs_filters = {
+        'length__in': [2, 3, 4, 5],
+    }
 
 
 class Event(BaseModel):
@@ -209,7 +219,7 @@ class ChampionKill(Event):
     def _set_duration(self, kill):
         if self.start.length < 2:
             return
-        self.start.duration = kill.time - self.start.time
+        self.start.duration = (kill.time - self.start.time) / self.start.length
 
     def _set_start(self, kill):
         kill.start = self.start
