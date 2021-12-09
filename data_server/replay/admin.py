@@ -1,4 +1,5 @@
 from django.contrib import admin, messages
+from django.contrib.admin.decorators import display
 from django.utils.safestring import mark_safe
 
 from replay.filters import KillReplayFilter
@@ -11,6 +12,7 @@ class KillReplayAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'created',
+        'kill_duration',
         'event',
         'video',
         'title',
@@ -61,6 +63,10 @@ class KillReplayAdmin(admin.ModelAdmin):
             return obj.file.upload_info.title
         except:
             return None
+
+    @display(ordering='event__duration')
+    def kill_duration(self, obj):
+        return obj.event.duration
 
     def delete_model(self, request, obj):
         if not obj.deleteable():

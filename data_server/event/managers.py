@@ -46,7 +46,7 @@ class InterestScoreManager(BaseManager):
                 target_field + '__gte': score_obj.lte_boundary,
                 target_field + '__lt': score_obj.gt_boundary,
             }
-            target_model.objects.filter(**filter_dict).update(**{
+            target_model.base_manager.filter(**filter_dict).update(**{
                 score_field: score_obj,
             })
 
@@ -61,7 +61,7 @@ class InterestScoreManager(BaseManager):
         target_model = apps.get_model(*self.model.target_model.split('.'))
         target_field = self.model.target_field
         values = (
-            target_model.objects
+            target_model.base_manager
             .filter(**self.model.normalize_qs_filters)
             .order_by(target_field)
             .values_list(target_field, flat=True)
