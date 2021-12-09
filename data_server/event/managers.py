@@ -4,6 +4,7 @@ import numpy as np
 from common.models import BaseManager
 from django.apps import apps
 from django.db import models
+from django.db.models import F, Sum
 from match.models import Version
 from replay.models import KillReplay, ReplayBlackList
 
@@ -96,6 +97,13 @@ class ChampionKillManager(BaseManager):
         return (qs
             .exclude(timeline__id__in=blacklist_match_ids)
             .filter(timeline__match__version__useable=True)
+            .annotate(
+                interest_score=Sum(
+                    F('duration_score__value'),
+                    output_field=models.IntegerField(),
+                )
+            )
+            .order_by('-interest_score')
         )
 
     def not_recorded_pentakills(self):

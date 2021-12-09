@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib import admin
 from django.db import models
+from django.db.models import F
 from django.db.models.expressions import OuterRef, Subquery
 from django.utils.safestring import mark_safe
 from replay.models import KillReplay
@@ -38,8 +39,8 @@ class ChampionKillAdmin(admin.ModelAdmin):
     list_display = (
         'created',
         'length',
-        'duration',
         'duration_score_value',
+        'interest_score',
     )
     fields = (
         'killer',
@@ -51,15 +52,23 @@ class ChampionKillAdmin(admin.ModelAdmin):
     )
     list_per_page = 20
     show_full_result_count = False
-    ordering = (
-        '-created',
-    )
     list_filter = (
         'length',
     )
 
+    def get_ordering(self, request):
+        return (
+            F('interest_score').desc(nulls_last=True),
+            '-created',
+        )
+
+    @admin.display(ordering='duration_score__value')
     def duration_score_value(self, obj):
         try:
             return obj.duration_score.value
         except:
             return None
+
+    @admin.display(ordering=F('interest_score').desc(nulls_last=True))
+    def interest_score(self, obj):
+        return obj.interest_score
