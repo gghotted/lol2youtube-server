@@ -6,14 +6,33 @@ from easydict import EasyDict
 
 from event.exceptions import (NotAddableKillSequenceException,
                               NotFoundPrevKillException)
-from event.managers import ChampionKillManager
+from event.managers import ChampionKillManager, InterestScoreManager
 
 
 class InterestScore(BaseModel):
+    '''
+    real_value가 낮을수록 낮은 점수
+    '''
+    low_is_good = False
+
+    '''
+    스코어에 해당하는 타켓의 모델과 필드
+    '''
+    target_model = None
+    target_field = ''
+    score_field_postfix = '_score'
+
+    '''
+    normalize에 사용할 쿼리셋 필터
+    '''
+    normalize_qs_filters = dict()
+
     VALUE_CHOICES = [(i, i) for i in range(1, 11)]
     value = models.IntegerField(choices=VALUE_CHOICES)
     lte_boundary = models.FloatField()
     gt_boundary = models.FloatField()
+
+    objects = InterestScoreManager()
 
     class Meta:
         abstract = True
@@ -21,6 +40,15 @@ class InterestScore(BaseModel):
     @classmethod
     def evaluate(cls, real_value):
         return cls.objects.get(lte_boundary__lte=real_value, gt_boundary__gt=real_value)
+
+
+class DurationScore(InterestScore):
+    low_is_good = True
+    target_model = 'event.ChampionKill'
+    target_field = 'duration'
+    normalize_qs_filters = {
+        'length__in': [2, 3, 4, 5],
+    }
 
 
 class Event(BaseModel):
@@ -96,6 +124,17 @@ class ChampionKill(Event):
     bounty = models.PositiveIntegerField()
     length = models.PositiveIntegerField(default=1)
 
+    '''
+    sequence에서 first와 last의 시간 차
+    '''
+    duration = models.FloatField(default=float('inf'))
+
+    '''
+    duration의 1~10점 사이의 점수
+    duration값이 작을 수록 interest함 -> 작을 수록 높은 점수
+    '''
+    duration_score = models.ForeignKey('event.DurationScore', models.DO_NOTHING, null=True)
+
     objects = ChampionKillManager()
 
     class Meta:
@@ -168,6 +207,7 @@ class ChampionKill(Event):
 
     def _add_sequence(self, kill):
         self._set_length(kill)
+        self._set_duration(kill)
         self._set_start(kill)
         self.start.save()
         kill.save()
@@ -175,6 +215,11 @@ class ChampionKill(Event):
     def _set_length(self, kill):
         self.start.length += 1
         kill.length = 0
+
+    def _set_duration(self, kill):
+        if self.start.length < 2:
+            return
+        self.start.duration = (kill.time - self.start.time) / self.start.length
 
     def _set_start(self, kill):
         kill.start = self.start
