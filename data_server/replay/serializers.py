@@ -10,7 +10,7 @@ class BlackListCreateCreateSerializer(serializers.ModelSerializer):
 
 
 class KillReplayCreateSerializer(serializers.ModelSerializer):
-    file = serializers.FileField()
+    file = serializers.FileField(required=False)
     org_file = serializers.FileField()
 
     class Meta:
@@ -18,11 +18,12 @@ class KillReplayCreateSerializer(serializers.ModelSerializer):
         fields = ('event', 'file', 'org_file')
 
     def create(self, validated_data):
-        file = ReplayFile.objects.create(file=validated_data.pop('file'))
         org_file = ReplayFile.objects.create(file=validated_data.pop('org_file'))
-        instance = KillReplay.objects.create(
-            file=file,
-            org_file=org_file,
+        params = {
             **validated_data,
-        )
+            'org_file': org_file,
+        }
+        if validated_data.get('file'):
+            params['file'] = ReplayFile.objects.create(file=validated_data.pop('file'))
+        instance = KillReplay.objects.create(**validated_data)
         return instance

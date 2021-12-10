@@ -97,13 +97,7 @@ class ChampionKillManager(BaseManager):
         return (qs
             .exclude(timeline__id__in=blacklist_match_ids)
             .filter(timeline__match__version__useable=True)
-            .annotate(
-                interest_score=Sum(
-                    F('duration_score__value'),
-                    output_field=models.IntegerField(),
-                )
-            )
-            .order_by('-interest_score')
+            .order_by('duration')
         )
 
     def not_recorded_pentakills(self):

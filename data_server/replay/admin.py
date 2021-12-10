@@ -12,6 +12,7 @@ class KillReplayAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'created',
+        'version_useable',
         'kill_duration',
         'event',
         'video',
@@ -20,15 +21,13 @@ class KillReplayAdmin(admin.ModelAdmin):
     )
     fields = (
         'id',
-        'file',
-        'org_file',
-        'event',
+        'filepath',
+        'video',
     )
     readonly_fields = (
         'id',
-        'file',
-        'org_file',
-        'event',
+        'filepath',
+        'video',
     )
     list_per_page = 5
     list_filter = (
@@ -43,25 +42,31 @@ class KillReplayAdmin(admin.ModelAdmin):
         'set_non_status',
     )
 
+    def version_useable(self, obj):
+        return obj.event.timeline.match.version.useable
+
+    def filepath(self, obj):
+        return obj.org_file.file.path
+
     @admin.display()
     def video(self, obj):
-        if not obj.file:
+        if not obj.org_file:
             return None
         return mark_safe(
-            f'<video controls width="400" preload="metadata">'
-            f'<source src="{obj.file.file.url}" type="video/mp4">'
+            f'<video controls width="400" preload="none">'
+            f'<source src="{obj.org_file.file.url}" type="video/mp4">'
             f'</video>'
         )
 
     def url(self, obj):
         try:
-            return mark_safe('<a href="{url}">{url}</a>'.format(url=obj.file.upload_info.url))
+            return mark_safe('<a href="{url}">{url}</a>'.format(url=obj.org_file.upload_info.url))
         except:
             return None
 
     def title(self, obj):
         try:
-            return obj.file.upload_info.title
+            return obj.org_file.upload_info.title
         except:
             return None
 
@@ -88,7 +93,7 @@ class KillReplayAdmin(admin.ModelAdmin):
         if not obj.deleteable():
             self.message_user(request, f'{obj}를 삭제할 수 없습니다', messages.ERROR)
             return
-        obj.to_blacklist()
+        obj.to_blacklist('관리자에 의해 등록')
         self.message_user(request, f'{obj}를 삭제했습니다')
 
     @admin.action(description='삭제 및 블랙리스트에 등록')
@@ -97,7 +102,7 @@ class KillReplayAdmin(admin.ModelAdmin):
         삭제 후 다시 크롤링될 수 없습니다.
         '''
         for obj in queryset:
-            obj.to_blacklist()
+            self.blacklist_model(request, obj)
 
     @admin.action(description='"업로드 대기중"으로 상태 변경')
     def set_wait_upload(self, request, queryset):

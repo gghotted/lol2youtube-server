@@ -9,4 +9,10 @@ class NotRecordedChampionKillSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ChampionKill
-        fields = '__all__'
+        fields = (
+            'id',
+            'timeline',
+            'time',
+            'killer',
+            'start',
+        )

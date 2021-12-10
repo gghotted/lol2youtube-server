@@ -39,8 +39,7 @@ class ChampionKillAdmin(admin.ModelAdmin):
     list_display = (
         'created',
         'length',
-        'duration_score_value',
-        'interest_score',
+        'duration',
     )
     fields = (
         'killer',
@@ -58,7 +57,7 @@ class ChampionKillAdmin(admin.ModelAdmin):
 
     def get_ordering(self, request):
         return (
-            F('interest_score').desc(nulls_last=True),
+            'duration',
             '-created',
         )
 

@@ -19,7 +19,8 @@ class ReplayFile(BaseModel):
         return Path(self.file.path).exists()
 
     def on_predelete(self):
-        Path(self.file.path).unlink()
+        if self.file_exist():
+            Path(self.file.path).unlink()
 
 
 class ReplaySource(BaseModel):
@@ -40,13 +41,13 @@ class ReplaySource(BaseModel):
 
     def set_wait_upload(self):
         UploadInfo.objects.create(
-            file=self.file,
+            file=self.org_file,
             title=self.title,
             description=self.description,
         )
 
     def set_non_status(self):
-        self.file.upload_info.delete()
+        self.org_file.upload_info.delete()
 
     def deleteable(self):
         deleteable = True
@@ -106,6 +107,7 @@ class KillReplay(ReplaySource):
             match=match,
             msg=msg
         )
+        self.org_file.upload_info.delete()
         self.delete()
 
 
