@@ -25,5 +25,5 @@ class KillReplayCreateSerializer(serializers.ModelSerializer):
         }
         if validated_data.get('file'):
             params['file'] = ReplayFile.objects.create(file=validated_data.pop('file'))
-        instance = KillReplay.objects.create(**validated_data)
+        instance = KillReplay.objects.create(**params)
         return instance

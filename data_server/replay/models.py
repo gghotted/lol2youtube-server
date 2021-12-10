@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from common.models import BaseModel
+from django.core.files.storage import default_storage
 from django.db import models
 from youtube.models import UploadInfo
 
@@ -16,11 +17,11 @@ class ReplayFile(BaseModel):
     file = models.FileField(upload_to='replay/%Y/%m/%d')
 
     def file_exist(self):
-        return Path(self.file.path).exists()
+        return default_storage.exists(self.file.name)
 
     def on_predelete(self):
         if self.file_exist():
-            Path(self.file.path).unlink()
+            default_storage.delete(self.file.name)
 
 
 class ReplaySource(BaseModel):

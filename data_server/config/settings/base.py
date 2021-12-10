@@ -164,6 +164,13 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-MEDIA_URL = '/media/'
+GS_MEDIA_BUCKET_NAME  = 'lol2youtube'
 
-MEDIA_ROOT = BASE_DIR / 'media'
+GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+    SECRET_DIR / 'lol2youtube-serviceaccount.json'
+)
+
+DEFAULT_FILE_STORAGE = 'config.storage_backends.GoogleCloudMediaStorage'
+
+MEDIA_URL = f'https://storage.cloud.google.com/{GS_MEDIA_BUCKET_NAME}/'
+
