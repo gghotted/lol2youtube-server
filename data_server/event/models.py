@@ -1,5 +1,6 @@
 from datetime import time
 
+from champion.models import Champion, Ultimate
 from common.models import BaseModel
 from django.db import models
 from easydict import EasyDict
@@ -135,6 +136,9 @@ class ChampionKill(Event):
     '''
     duration_score = models.ForeignKey('event.DurationScore', models.DO_NOTHING, null=True)
 
+    ultimate_hits = models.ManyToManyField('champion.Ultimate', related_name='hits')
+    sequence_ultimate_hit_count = models.PositiveBigIntegerField(default=0)
+
     objects = ChampionKillManager()
 
     class Meta:
@@ -199,6 +203,12 @@ class ChampionKill(Event):
         else:
             raise NotFoundPrevKillException
 
+    def set_ultimate_hits(self):
+        for received in self.json_src['victimDamageReceived']:
+            if received.get('spellSlot') == 3:
+                champion, _ = Champion.objects.get_or_create(eng_name=received['name'])
+                ultimate, _ = Ultimate.objects.get_or_create(champion=champion)
+                self.ultimate_hits.add(ultimate)
 
     def add_sequence(self, kill):
         if not self.addable(kill):
@@ -208,6 +218,7 @@ class ChampionKill(Event):
     def _add_sequence(self, kill):
         self._set_length(kill)
         self._set_duration(kill)
+        self._set_ultimate_hit_count(kill)
         self._set_start(kill)
         self.start.save()
         kill.save()
@@ -221,6 +232,9 @@ class ChampionKill(Event):
             return
         self.start.duration = (kill.time - self.start.time) / self.start.length
         self.start.duration_score = DurationScore.evaluate(self.start.duration)
+
+    def _set_ultimate_hit_count(self, kill):
+        self.start.sequence_ultimate_hit_count += kill.ultimate_hits.count()
 
     def _set_start(self, kill):
         kill.start = self.start

@@ -16,3 +16,7 @@ class Champion(BaseModel):
     eng_name = models.CharField(primary_key=True, max_length=64)
     kor_name = models.CharField(max_length=64, blank=True)
     objects = ChampionManager()
+
+
+class Ultimate(BaseModel):
+    champion = models.OneToOneField('champion.Champion', models.CASCADE, related_name='ultimate')

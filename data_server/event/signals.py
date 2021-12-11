@@ -13,6 +13,8 @@ def chapion_kill_post_save(sender, **kwargs):
     if kill.start:
         return
 
+    kill.set_ultimate_hits()
+
     try:
         prev_kill = kill.get_prev_kill()
         prev_kill.add_sequence(kill)
