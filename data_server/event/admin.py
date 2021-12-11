@@ -40,10 +40,12 @@ class ChampionKillAdmin(admin.ModelAdmin):
         'created',
         'length',
         'duration',
+        'sequence_ultimate_hit_count',
     )
     fields = (
         'killer',
         'victim',
+        'ultimate_hits',
     )
     readonly_fields = (
         'killer',
