@@ -22,6 +22,9 @@ class ReplayFile(BaseModel):
         if self.file_exist():
             Path(self.file.path).unlink()
 
+    def __str__(self):
+        return self.file.path
+
 
 class ReplaySource(BaseModel):
     org_file = models.OneToOneField('replay.ReplayFile', models.DO_NOTHING, related_name='org_replay', null=True)
@@ -38,16 +41,6 @@ class ReplaySource(BaseModel):
     @property
     def description(self):
         raise NotImplementedError
-
-    def set_wait_upload(self):
-        UploadInfo.objects.create(
-            file=self.org_file,
-            title=self.title,
-            description=self.description,
-        )
-
-    def set_non_status(self):
-        self.org_file.upload_info.delete()
 
     def deleteable(self):
         deleteable = True

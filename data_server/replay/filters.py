@@ -9,9 +9,10 @@ class KillReplayFilter(SimpleListFilter):
 
     def lookups(self, request, model_admin):
         return (
-            ('non_status', '상태 없음'),
-            ('wait_upload', '업로드 대기중'),
-            ('uploaded', '업로드 됨'),
+            ('has_only_org_file', '원본 파일만 있음'),
+            ('has_both_file', '업로드 파일 생성됨'),
+            ('has_upload_info', '업로드 됨(긴 영상 없음)'),
+            ('has_long_file', '업로드 됨(긴 영상 있음)'),
         )
 
     def queryset(self, request, queryset):
