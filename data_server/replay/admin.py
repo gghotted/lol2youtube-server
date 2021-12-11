@@ -1,4 +1,5 @@
 from django.contrib import admin, messages
+from django.utils.safestring import mark_safe
 from youtube.models import UploadInfo
 
 from replay.filters import KillReplayFilter
@@ -26,6 +27,7 @@ class KillReplayAdmin(admin.ModelAdmin):
     list_display = (
         'created',
         'duration',
+        'video',
     )
     fields = (
         'org_file',
@@ -52,6 +54,15 @@ class KillReplayAdmin(admin.ModelAdmin):
     @admin.display(ordering='event__duration')
     def duration(self, obj):
         return obj.event.duration
+
+    def video(self, obj):
+        if not obj.org_file:
+            return None
+        return mark_safe(
+            f'<video controls width="400" preload="meta">'
+            f'<source src="{obj.org_file.file.url}" type="video/mp4">'
+            f'</video>'
+        )
 
     @admin.action(description='선택된 항목을 긴 영상(모음집)과 연결')
     def add_long_file(self, request, queryset):
