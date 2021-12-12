@@ -70,3 +70,4 @@ class Ultimate(BaseModel):
         'MonkeyKing',
     }
     champion = models.OneToOneField('champion.Champion', models.CASCADE, related_name='ultimate')
+    interested = models.BooleanField(default=True)

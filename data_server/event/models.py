@@ -207,7 +207,7 @@ class ChampionKill(Event):
         for received in self.json_src['victimDamageReceived']:
             slot = received.get('spellSlot')
             name = received.get('name')
-            if slot == 3 and name in Ultimate.INTEREST_ULTIMATE_CHAMPION_NAME:
+            if slot == 3:
                 champion, _ = Champion.objects.get_or_create(eng_name=name)
                 ultimate, _ = Ultimate.objects.get_or_create(champion=champion)
                 self.ultimate_hits.add(ultimate)
