@@ -9,7 +9,7 @@ class NotRecordedChampionKillDetailView(RetrieveAPIView):
     queryset = ChampionKill.objects.not_recorded_pentakills()
 
     def get_object(self):
-        o = self.request.GET.get('o', '-duration')
+        o = self.request.GET.get('o', 'duration')
         qs = self.get_queryset().order_by(o)
         return qs.first()
 

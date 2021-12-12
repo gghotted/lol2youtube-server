@@ -204,7 +204,10 @@ class ChampionKill(Event):
             raise NotFoundPrevKillException
 
     def set_ultimate_hits(self):
-        for received in self.json_src['victimDamageReceived']:
+        damage_info = self.json_src['victimDamageReceived']
+        if self.json_src.get('victimDamageDealt'):
+            damage_info += self.json_src['victimDamageDealt']
+        for received in damage_info:
             slot = received.get('spellSlot')
             name = received.get('name')
             if slot == 3:
