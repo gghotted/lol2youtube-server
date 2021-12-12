@@ -23,7 +23,9 @@ class Pentakill(ExcludeQueryset):
 class BestUltimateHitCount(ExcludeQueryset):
     def get_queryset(self, qs: QuerySet):
         json_ids = (
-            ChampionKill.base_manager
+            ChampionKill.objects
+            .all()
+            .not_recorded()
             .filter(length__in=[3, 4, 5])
             .filter(timeline__match__version__useable=True)
             .order_by('-sequence_ultimate_hit_count')
