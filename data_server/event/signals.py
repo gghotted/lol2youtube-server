@@ -20,4 +20,5 @@ def chapion_kill_post_save(sender, **kwargs):
         prev_kill.add_sequence(kill)
     except (NotFoundPrevKillException, NotAddableKillSequenceException):
         kill.start = kill
+        kill.sequence_ultimate_hit_count = kill.ultimate_hits.count()
         kill.save()
