@@ -1,7 +1,9 @@
-from rest_framework.generics import RetrieveAPIView, UpdateAPIView
+from rest_framework.generics import (CreateAPIView, RetrieveAPIView,
+                                     UpdateAPIView)
 
 from youtube.models import UploadInfo
-from youtube.serializers import (UploadInfoSerializer,
+from youtube.serializers import (UploadInfoCreateSerializer,
+                                 UploadInfoSerializer,
                                  UploadInfoUpdateSerializer)
 
 
@@ -17,3 +19,7 @@ class UploadInfoUpdateView(UpdateAPIView):
     
     def get_queryset(self):
         return UploadInfo.objects.all()
+
+
+class UploadInfoCreateView(CreateAPIView):
+    serializer_class = UploadInfoCreateSerializer

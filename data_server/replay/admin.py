@@ -27,6 +27,7 @@ class KillReplayAdmin(admin.ModelAdmin):
     list_display = (
         'created',
         'duration',
+        'sequence_ultimate_hit_count',
         'video',
     )
     fields = (
@@ -45,6 +46,7 @@ class KillReplayAdmin(admin.ModelAdmin):
     actions = (
         'add_long_file',
     )
+    list_per_page = 5
 
     def get_ordering(self, request):
         return (
@@ -55,12 +57,16 @@ class KillReplayAdmin(admin.ModelAdmin):
     def duration(self, obj):
         return obj.event.duration
 
+    @admin.display(ordering='event__sequence_ultimate_hit_count')
+    def sequence_ultimate_hit_count(self, obj):
+        return obj.event.sequence_ultimate_hit_count
+
     def video(self, obj):
-        if not obj.org_file:
+        if not obj.file:
             return None
         return mark_safe(
             f'<video controls width="400" preload="meta">'
-            f'<source src="{obj.org_file.file.url}" type="video/mp4">'
+            f'<source src="{obj.file.file.url}" type="video/mp4">'
             f'</video>'
         )
 

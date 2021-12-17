@@ -72,10 +72,11 @@ class KillReplay(ReplaySource):
     event = models.ForeignKey('event.ChampionKill', on_delete=models.DO_NOTHING, related_name='killreplay')
     long_file = models.ForeignKey('replay.KillLongReplay', on_delete=models.DO_NOTHING, related_name='short_files', null=True)
 
-    title_format = '#PentaKill #{killer} #LOL #shorts'
+    title_format = '#펜타킬 #{killer} #롤 #shorts'
     description_format = '\n'.join([
-        'Total Damage: {total_damage}',
-        'Total Damage Contribution: {total_damage_contribution:.2}',
+        '펜타킬러 총 데미지: {total_damage}',
+        '펜타킬러 총 데미지 기여도: {total_damage_contribution:.2}',
+        '펜타킬 시간: {total_duration}',
     ])
 
     @property
@@ -89,6 +90,7 @@ class KillReplay(ReplaySource):
         return self.description_format.format(
             total_damage=self.event.total_damage,
             total_damage_contribution=self.event.total_damage_contribution,
+            total_duration=round(self.event.duration * 5 / 1000),
         )
 
     def to_blacklist(self, msg):

@@ -27,3 +27,22 @@ class KillReplayCreateSerializer(serializers.ModelSerializer):
             params['file'] = ReplayFile.objects.create(file=validated_data.pop('file'))
         instance = KillReplay.objects.create(**params)
         return instance
+
+
+class KillReplaySerializer(serializers.ModelSerializer):
+    title = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
+    filepath = serializers.SerializerMethodField()
+
+    class Meta:
+        model = KillReplay
+        fields = ('id', 'file', 'title', 'description', 'filepath')
+
+    def get_title(self, obj):
+        return obj.title
+
+    def get_description(self, obj):
+        return obj.description
+
+    def get_filepath(self, obj):
+        return obj.file.file.path

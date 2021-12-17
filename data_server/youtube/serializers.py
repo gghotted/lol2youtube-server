@@ -25,3 +25,14 @@ class UploadInfoUpdateSerializer(serializers.ModelSerializer):
         fields = (
             'url',
         )
+
+
+class UploadInfoCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UploadInfo
+        fields = (
+            'file',
+            'title',
+            'description',
+            'url',
+        )

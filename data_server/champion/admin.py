@@ -12,6 +12,9 @@ class ChampionAdmin(admin.ModelAdmin):
         'kill_count',
         'pentakill_count',
     )
+    list_editable = (
+        'kor_name',
+    )
 
     def get_ordering(self, request):
         return ('-pentakill_count', )

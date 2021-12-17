@@ -6,5 +6,6 @@ app_name = 'youtube'
 
 urlpatterns = [
     path('upload_info/wait_upload', views.UploadInfoWaitUploadView.as_view()),
-    path('upload_info/<int:pk>', views.UploadInfoUpdateView.as_view())
+    path('upload_info/<int:pk>', views.UploadInfoUpdateView.as_view()),
+    path('upload_info', views.UploadInfoCreateView.as_view()),
 ]
