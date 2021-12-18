@@ -19,3 +19,8 @@ class UploadInfo(BaseModel):
     privacy_status = models.CharField(max_length=16, choices=PRIVACY_STATUSES, default='public')
     embeddable = models.BooleanField(default=True)
     url = models.URLField(blank=True)
+
+
+class CommentAD(BaseModel):
+    upload_info = models.OneToOneField('youtube.UploadInfo', models.CASCADE, related_name='command_ad')
+    content = models.TextField()
