@@ -1,4 +1,5 @@
 import time
+from datetime import datetime, timedelta
 
 import requests
 from django.conf import settings
@@ -7,7 +8,39 @@ from requests.exceptions import ConnectionError
 from raw_data.exceptions import JsonDataAlreadyExist
 from raw_data.models import APICallInfo, JsonData
 
-api_key = settings.RIOT_API_KEY
+api_keys = settings.RIOT_API_KEYS
+
+
+class APIKey:
+    def __init__(self, key):
+        self.key = key
+        self.usable_time = datetime.min
+    
+    @property
+    def is_usable(self):
+        return datetime.now() > self.usable_time
+
+    def rest(self, sec):
+        sec += 5
+        self.usable_time = datetime.now() + timedelta(seconds=sec)
+
+    def __str__(self):
+        return self.key
+
+
+class APIKeyManager:
+    def __init__(self, keys):
+        self.keys = [APIKey(key) for key in keys]
+    
+    def get_usable_key(self):
+        key = list(sorted(self.keys, key=lambda k: k.usable_time))[0]
+        if datetime.now() > key.usable_time:
+            return key
+        else:
+            wait_time = (key.usable_time - datetime.now()).seconds
+            print(f'api key를 사용하기위해 {wait_time}초 기다립니다.')
+            time.sleep(wait_time)
+            return key
 
 
 class APIResource:
@@ -21,6 +54,8 @@ class APIResource:
         self.json = None
         self.call_info = None
         self.json_data_obj = None
+        self.apikey_manager = APIKeyManager(api_keys)
+        self.apikey = None
 
     @property
     def host(self):
@@ -32,7 +67,8 @@ class APIResource:
 
     @property
     def headers(self):
-        return {'X-Riot-Token': api_key}
+        self.apikey = self.apikey_manager.get_usable_key()
+        return {'X-Riot-Token': str(self.apikey)}
 
     def get(self, try_count=0, **kwargs):
         try:
@@ -63,9 +99,8 @@ class APIResource:
             raise JsonDataAlreadyExist('이미 존재하는 데이터 입니다.')
 
     def _retry_call(self):
-        wait_time = int(self.response.headers['retry-after']) + 5
-        print(f'rate limits에 걸려 {wait_time}초 슬립합니다.')
-        time.sleep(wait_time)
+        wait_time = int(self.response.headers['retry-after'])
+        self.apikey.rest(wait_time)
         return self()
 
     def _save_call_info(self):

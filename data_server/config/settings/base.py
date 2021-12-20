@@ -135,7 +135,7 @@ TIME_ZONE = 'Asia/Seoul'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-RIOT_API_KEY = COMMON_SECRET['riot_api_key']
+RIOT_API_KEYS = COMMON_SECRET['riot_api_keys']
 
 # 매치 데이터를 이 시간 이내에 다시 업데이트할 수 없습니다.
 SUMMONER_MIN_UPDATE_TIME = timedelta(days=1)
