@@ -20,7 +20,10 @@ class UploadInfo(BaseModel):
     embeddable = models.BooleanField(default=True)
     url = models.URLField(blank=True)
 
+    class Meta:
+        ordering = ('-created', )
+
 
 class CommentAD(BaseModel):
-    upload_info = models.OneToOneField('youtube.UploadInfo', models.CASCADE, related_name='command_ad')
+    upload_info = models.OneToOneField('youtube.UploadInfo', models.CASCADE, related_name='comment_ad')
     content = models.TextField()

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from youtube.models import UploadInfo
+from youtube.models import CommentAD, UploadInfo
 
 
 class UploadInfoSerializer(serializers.ModelSerializer):
@@ -13,6 +13,7 @@ class UploadInfoSerializer(serializers.ModelSerializer):
             'title',
             'description',
             'filepath',
+            'url',
         )
     
     def get_filepath(self, obj):
@@ -35,4 +36,13 @@ class UploadInfoCreateSerializer(serializers.ModelSerializer):
             'title',
             'description',
             'url',
+        )
+
+
+class CommentADCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommentAD
+        fields = (
+            'upload_info',
+            'content',
         )
