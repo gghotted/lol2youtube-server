@@ -17,3 +17,7 @@ class Timeline(BaseModel):
     @staticmethod
     def parse_match_id(data):
         return data.metadata.matchId
+
+    @property
+    def is_interested(self):
+        return self.match.has_pentakill
