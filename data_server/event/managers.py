@@ -78,11 +78,11 @@ class InterestScoreManager(BaseManager):
 
 class ChampionKillQuerySet(models.QuerySet):
     def not_recorded(self):
-        recorded_ids = KillReplay.objects.values('event__id')
+        recorded_ids = KillReplay.objects.exclude(event__id=None).values('event__id')
         return self.exclude(id__in=recorded_ids)
 
     def recorded(self):
-        recorded_ids = KillReplay.objects.values('event__id')
+        recorded_ids = KillReplay.objects.exclude(event__id=None).values('event__id')
         return self.filter(id__in=recorded_ids)
 
     def pentakills(self):
