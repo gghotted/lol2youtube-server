@@ -36,6 +36,12 @@ class BestUltimateHitCount(ExcludeQueryset):
         return qs.filter(id__in=json_ids)
 
 
+class NotUploaded(ExcludeQueryset):
+    def get_queryset(self, qs: QuerySet):
+        json_ids = KillReplay.base_manager.filter(file__upload_info=None).values('event__timeline__match__json__id')
+        return qs.filter(id__in=json_ids)
+
+
 class Recorded(ExcludeQueryset):
     def get_queryset(self, qs: QuerySet):
         json_ids = KillReplay.base_manager.values('event__timeline__match__json__id')
@@ -57,7 +63,7 @@ class NotUseableMatch(DeleteQueryset):
 class JsonDataCleaner(DataCleaner):
     start_queryset = JsonData.objects.matches()
     delete_queryset_list = [NotInterestedKill(), NotUseableMatch()]
-    exclude_queryset_list = [Pentakill(), BestUltimateHitCount()]
+    exclude_queryset_list = [Pentakill(), BestUltimateHitCount(), NotUploaded()]
     model = JsonData
     remain_delete_count = settings.JSON_DATA_REMAIN_COUNT
     ordering = ['-game_creation']
