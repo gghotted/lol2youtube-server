@@ -12,7 +12,9 @@ from data_cleaner.base import DataCleaner, DeleteQueryset, ExcludeQueryset
 class Pentakill(ExcludeQueryset):
     def get_queryset(self, qs: QuerySet):
         json_ids = (
-            ChampionKill.base_manager
+            ChampionKill.objects
+            .all()
+            .not_recorded()
             .filter(length=5)
             .filter(timeline__match__version__useable=True)
             .values('timeline__match__json__id')
@@ -55,7 +57,7 @@ class NotUseableMatch(DeleteQueryset):
 class JsonDataCleaner(DataCleaner):
     start_queryset = JsonData.objects.matches()
     delete_queryset_list = [NotInterestedKill(), NotUseableMatch()]
-    exclude_queryset_list = [Pentakill(), Recorded(), BestUltimateHitCount()]
+    exclude_queryset_list = [Pentakill(), BestUltimateHitCount()]
     model = JsonData
     remain_delete_count = settings.JSON_DATA_REMAIN_COUNT
     ordering = ['-game_creation']
