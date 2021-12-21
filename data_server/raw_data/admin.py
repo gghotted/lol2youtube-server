@@ -80,6 +80,7 @@ class MatchJsonDataAdmin(admin.ModelAdmin):
             self.message_user(request, f'{count}개의 데이터가 삭제되었습니다. {detail}')
 
 
+@admin.register(APIKey)
 class APIKeyAdmin(admin.ModelAdmin):
     list_display = (
         'key',
