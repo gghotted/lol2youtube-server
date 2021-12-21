@@ -1,5 +1,8 @@
-from common.models import BaseModel
+from datetime import datetime
+
+from common.models import BaseManager, BaseModel
 from django.db import models
+from django.db.models import Max
 from django.db.models.aggregates import Max
 from django.db.models.expressions import F
 from easydict import EasyDict
@@ -39,3 +42,22 @@ class JsonData(BaseModel):
     @property
     def dot_data(self):
         return EasyDict(self.data)
+
+
+class APIKeyManager(BaseManager):
+    def get_usable_key(self):
+        return (self.filter(lock_until__lt=datetime.now())
+                    .annotate(last_used=Max('call_infos__created'))
+                    .order_by('last_used')
+                    .first()
+                )
+
+    def get_wait_secs(self):
+        fastest_apikey = self.order_by('lock_until').first()
+        return (fastest_apikey.lock_until - datetime.now()).seconds
+
+
+class APIKey(BaseModel):
+    lock_until = models.DateTimeField(default=datetime.min)
+    objects = APIKeyManager()
+
