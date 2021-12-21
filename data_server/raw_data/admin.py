@@ -5,7 +5,7 @@ from django.db.models import BooleanField, Case, Value, When
 from django.db.models.expressions import F
 from event.models import ChampionKill
 
-from raw_data.models import JsonData
+from raw_data.models import APIKey, JsonData
 
 
 @admin.register(JsonData)
@@ -78,3 +78,9 @@ class MatchJsonDataAdmin(admin.ModelAdmin):
         else:
             count, detail = queryset.delete()
             self.message_user(request, f'{count}개의 데이터가 삭제되었습니다. {detail}')
+
+
+class APIKeyAdmin(admin.ModelAdmin):
+    list_display = (
+        'key',
+    )

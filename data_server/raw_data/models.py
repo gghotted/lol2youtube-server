@@ -59,5 +59,6 @@ class APIKeyManager(BaseManager):
 
 class APIKey(BaseModel):
     lock_until = models.DateTimeField(default=datetime.min)
+    key = models.CharField(max_length=128, blank=True)
     objects = APIKeyManager()
 
