@@ -31,6 +31,7 @@ class APICallInfo(BaseModel):
     )
     type = models.CharField(max_length=16, choices=TYPE_CHOICES)
     url = models.URLField()
+    apikey = models.ForeignKey('raw_data.APIKey', models.DO_NOTHING, related_name='call_infos')
 
 
 class JsonData(BaseModel):
