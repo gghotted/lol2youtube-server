@@ -62,6 +62,12 @@ class NoEvent(DeleteQueryset):
         return qs.filter(id__in=json_ids)
 
 
+class NoPentakill(DeleteQueryset):
+    def get_queryset(self, qs: QuerySet):
+        json_ids = Match.base_manager.filter(has_pentakill=False).values('json__id')
+        return qs.filter(id__in=json_ids)
+
+
 class NotInterestedKill(DeleteQueryset):
     def get_queryset(self, qs: QuerySet):
         json_ids = ChampionKill.base_manager.exclude(length=5).values('timeline__match__json__id')
@@ -76,7 +82,7 @@ class NotUseableMatch(DeleteQueryset):
 
 class JsonDataCleaner(DataCleaner):
     start_queryset = JsonData.objects.matches()
-    delete_queryset_list = [NotInterestedKill(), NotUseableMatch()]
+    delete_queryset_list = [NotInterestedKill(), NotUseableMatch(), NoPentakill()]
     exclude_queryset_list = [Pentakill(), BestUltimateHitCount(), NotUploaded()]
     model = JsonData
     remain_delete_count = settings.JSON_DATA_REMAIN_COUNT
