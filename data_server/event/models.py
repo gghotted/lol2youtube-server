@@ -53,7 +53,7 @@ class DurationScore(InterestScore):
 
 
 class Event(BaseModel):
-    timeline = models.ForeignKey('timeline.Timeline', models.CASCADE)
+    timeline = models.ForeignKey('timeline.Timeline', models.CASCADE, related_name='events')
     type = models.CharField(max_length=64)
     time = models.PositiveIntegerField()
     json_src = models.JSONField()

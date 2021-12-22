@@ -1,10 +1,12 @@
 from django.conf import settings
-from django.db.models.aggregates import Max
+from django.db.models.aggregates import Count, Max
 from django.db.models.query import QuerySet
 from event.models import ChampionKill
 from match.models import Match
 from raw_data.models import JsonData
 from replay.models import KillReplay
+from timeline.models import Timeline
+from youtube.models import UploadInfo
 
 from data_cleaner.base import DataCleaner, DeleteQueryset, ExcludeQueryset
 
@@ -45,6 +47,18 @@ class NotUploaded(ExcludeQueryset):
 class Recorded(ExcludeQueryset):
     def get_queryset(self, qs: QuerySet):
         json_ids = KillReplay.base_manager.values('event__timeline__match__json__id')
+        return qs.filter(id__in=json_ids)
+
+    
+class Uploaded(DeleteQueryset):
+    def get_queryset(self, qs: QuerySet):
+        json_ids = UploadInfo.base_manager.values('file__replay__event__timeline__match__json__id')
+        return qs.filter(id__in=json_ids)
+
+
+class NoEvent(DeleteQueryset):
+    def get_queryset(self, qs: QuerySet):
+        json_ids = Timeline.base_manager.annotate(c=Count('events')).filter(c=0).values('match__json__id')
         return qs.filter(id__in=json_ids)
 
 
