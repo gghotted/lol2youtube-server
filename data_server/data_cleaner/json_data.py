@@ -82,7 +82,7 @@ class NotUseableMatch(DeleteQueryset):
 
 class JsonDataCleaner(DataCleaner):
     start_queryset = JsonData.objects.matches()
-    delete_queryset_list = [NotInterestedKill(), NotUseableMatch(), NoPentakill()]
+    delete_queryset_list = [NotInterestedKill(), NotUseableMatch(), NoPentakill(), Uploaded()]
     exclude_queryset_list = [Pentakill(), BestUltimateHitCount(), NotUploaded()]
     model = JsonData
     remain_delete_count = settings.JSON_DATA_REMAIN_COUNT
