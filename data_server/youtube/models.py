@@ -19,6 +19,7 @@ class UploadInfo(BaseModel):
     privacy_status = models.CharField(max_length=16, choices=PRIVACY_STATUSES, default='public')
     embeddable = models.BooleanField(default=True)
     url = models.URLField(blank=True)
+    channel_name = models.CharField(max_length=64, blank=True, default='')
 
     class Meta:
         ordering = ('-created', )

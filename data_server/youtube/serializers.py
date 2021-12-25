@@ -14,6 +14,7 @@ class UploadInfoSerializer(serializers.ModelSerializer):
             'description',
             'filepath',
             'url',
+            'channel_name',
         )
     
     def get_filepath(self, obj):

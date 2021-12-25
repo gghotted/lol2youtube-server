@@ -19,7 +19,7 @@ class UploadInfoNotHasADView(RetrieveAPIView):
     serializer_class = UploadInfoSerializer
 
     def get_object(self):
-        return UploadInfo.objects.filter(comment_ad=None).first()
+        return UploadInfo.objects.filter(comment_ad=None).exclude(channel_name='').first()
 
 
 class UploadInfoUpdateView(UpdateAPIView):
