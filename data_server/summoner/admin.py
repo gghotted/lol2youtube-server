@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from summoner.models import Summoner
+from summoner.models import Summoner, Tier
 
 
 @admin.register(Summoner)
@@ -15,3 +15,8 @@ class SummonerAdmin(admin.ModelAdmin):
 
     def recent_match_at(self, obj):
         return obj.recent_match_at
+
+
+@admin.register(Tier)
+class TierAdmin(admin.ModelAdmin):
+    list_display = ('ordering', 'name')
