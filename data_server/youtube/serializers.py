@@ -37,6 +37,7 @@ class UploadInfoCreateSerializer(serializers.ModelSerializer):
             'title',
             'description',
             'url',
+            'channel_name',
         )
 
 
