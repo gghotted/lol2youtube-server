@@ -44,6 +44,9 @@ class MatchCrawler:
 
     def _loop(self):
         summoner = Summoner.objects.get_to_update()
+        if not summoner:
+            time.sleep(3600)
+            return
         summoner.update_matches()
 
     def _is_continuable(self):

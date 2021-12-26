@@ -33,6 +33,7 @@ class Summoner(BaseModel):
     puuid = models.CharField(max_length=128, unique=True)
     name = models.CharField(max_length=64, blank=True)
     match_updated_at = models.DateTimeField(default=datetime.min)
+    tier = models.ForeignKey('summoner.Tier', models.DO_NOTHING, null=True, related_name='summoners')
 
     objects = SummonerManager()
     api_call_class = SummonerAPI
@@ -65,4 +66,14 @@ class Summoner(BaseModel):
     def matches(self):
         from match.models import Match
         return Match.objects.filter(participants__summoner=self)
+
+
+class TierOrdering:
+    UNDEFINED = 0
+    CHALLENGER = 1
+
+
+class Tier(BaseModel):
+    ordering = models.IntegerField()
+    name = models.CharField(max_length=32)
 
