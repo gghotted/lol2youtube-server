@@ -28,6 +28,7 @@ class APICallInfo(BaseModel):
         ('match', 'match'),
         ('match_list', 'match_list'),
         ('timeline', 'timeline'),
+        ('challenger', 'challenger'),
     )
     type = models.CharField(max_length=16, choices=TYPE_CHOICES)
     url = models.URLField()

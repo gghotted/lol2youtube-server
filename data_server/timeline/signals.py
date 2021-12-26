@@ -10,8 +10,6 @@ from timeline.models import Timeline
 def timeline_post_save(sender, **kwargs):
     timeline = kwargs['instance']
 
-    if not timeline.is_interested:
-        return
     events = sum(
         (frame.events for frame in timeline.json.dot_data.info.frames),
         []

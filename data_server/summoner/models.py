@@ -6,7 +6,7 @@ from django.db import models
 from django.db.models import Max
 from django.db.models.expressions import F
 from raw_data.models import JsonData
-from raw_data.riot_api import MatchListAPI, SummonerAPI
+from raw_data.riot_api import ChallengerLeaguesAPI, MatchListAPI, SummonerAPI
 
 
 class SummonerManager(BaseManager):
@@ -20,7 +20,7 @@ class SummonerManager(BaseManager):
         업데이트 시간이 오래된 순 (match_updated_at)
         '''
         boundary_time = datetime.now() - settings.SUMMONER_MIN_UPDATE_TIME
-        return self.filter(match_updated_at__lte=boundary_time) \
+        return self.filter(match_updated_at__lte=boundary_time, tier__ordering=TierOrdering.CHALLENGER) \
                    .annotate(recent_match_at=Max('participants__match__game_creation')) \
                    .order_by(F('recent_match_at').desc(nulls_last=True), 'match_updated_at')
 
@@ -45,6 +45,20 @@ class Summoner(BaseModel):
     @staticmethod
     def parse_name(data):
         return data.name
+
+    @staticmethod
+    def update_challengers():
+        Summoner.objects.update(tier=None)
+
+        entries = ChallengerLeaguesAPI()().json['entries']
+        pk_list = []
+        for challenger in entries:
+            summoner_id = challenger['summonerId']
+            pk = Summoner.objects.create_or_get_from_api(summoner_id=summoner_id).pk
+            pk_list.append(pk)
+
+        challenger_obj = Tier.objects.get(ordering=TierOrdering.CHALLENGER)
+        Summoner.objects.filter(pk__in=pk_list).update(tier=challenger_obj)
 
     def update_matches(self):
         from match.models import Match

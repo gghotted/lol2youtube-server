@@ -93,7 +93,10 @@ class APIResource:
         return self
 
     def _check_already_exist(self):
-        json_data = JsonData.objects.exclude(api_info=None).filter(api_info__url=self.url)
+        json_data = (JsonData.objects
+                             .exclude(api_info=None)
+                             .exclude(api_info__type='challenger')
+                             .filter(api_info__url=self.url))
         if json_data.exists():
             self.json_data_obj = json_data.first()
             raise JsonDataAlreadyExist('이미 존재하는 데이터 입니다.')
@@ -141,11 +144,14 @@ class MatchListAPI(APIResource):
     def endpoint(self):
         from match.models import Version
 
-        start_time = (int(
-            Version.objects.latest_version()
-            .matches.order_by('game_creation')
-            .first().game_creation.timestamp()
-        ))
+        if Version.objects.exists():
+            start_time = (int(
+                Version.objects.latest_version()
+                .matches.order_by('game_creation')
+                .first().game_creation.timestamp()
+            ))
+        else:
+            start_time = 0
         queue = settings.MATCH_LIST_QUEUE_ID
         count = settings.MATCH_LIST_COUNT
         return (f'/lol/match/v5/matches/by-puuid/{self.puuid}/ids'
@@ -169,10 +175,11 @@ class SummonerAPI(APIResource):
     api_name = 'summoner'
     region = 'kr'
 
-    def __init__(self, name=None, puuid=None, **kwargs):
+    def __init__(self, name=None, puuid=None, summoner_id=None, **kwargs):
         super().__init__(**kwargs)
         self.name = name
         self.puuid = puuid
+        self.summoner_id = summoner_id
 
     @property
     def endpoint(self):
@@ -180,3 +187,11 @@ class SummonerAPI(APIResource):
             return f'/lol/summoner/v4/summoners/by-name/{self.name}'
         if self.puuid:
             return f'/lol/summoner/v4/summoners/by-puuid/{self.puuid}'
+        if self.summoner_id:
+            return f'/lol/summoner/v4/summoners/{self.summoner_id}'
+
+
+class ChallengerLeaguesAPI(APIResource):
+    api_name = 'challenger'
+    region = 'kr'
+    endpoint = '/lol/league/v4/challengerleagues/by-queue/RANKED_SOLO_5x5'

@@ -87,3 +87,8 @@ class JsonDataCleaner(DataCleaner):
     model = JsonData
     remain_delete_count = settings.JSON_DATA_REMAIN_COUNT
     ordering = ['-game_creation']
+
+
+class ChallengerJsonDataCleaner(JsonDataCleaner):
+    delete_queryset_list = [NotUseableMatch(), Uploaded()]
+    exclude_queryset_list = [NotUploaded()]

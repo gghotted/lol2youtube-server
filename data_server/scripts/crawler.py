@@ -1,7 +1,7 @@
 import signal
 import time
 
-from data_cleaner.json_data import JsonDataCleaner
+from data_cleaner.json_data import ChallengerJsonDataCleaner
 from django.conf import settings
 from match.models import Match
 from raw_data.models import JsonData
@@ -29,7 +29,7 @@ class MatchCrawler:
         self._preprocess()
         while self._is_continuable():
             if self.loop_count % self.clean_data_loop_count == 0:
-                JsonDataCleaner().clean()
+                ChallengerJsonDataCleaner().clean()
             self._loop()
             self.loop_count += 1
 
@@ -39,13 +39,15 @@ class MatchCrawler:
 
     def _preprocess(self):
         self._delete_invalid_data(JsonData.objects.matches(), '매치')
-        self._delete_invalid_data(JsonData.objects.summoners(), '소환사')
+        # self._delete_invalid_data(JsonData.objects.summoners(), '소환사')
         self._delete_invalid_data(JsonData.objects.timelines(), '타임라인')
+        Summoner.update_challengers()
 
     def _loop(self):
         summoner = Summoner.objects.get_to_update()
         if not summoner:
-            time.sleep(3600)
+            Summoner.update_challengers()
+            time.sleep(3600 * 5)
             return
         summoner.update_matches()
 
