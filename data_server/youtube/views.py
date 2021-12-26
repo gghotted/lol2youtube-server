@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from rest_framework.generics import (CreateAPIView, RetrieveAPIView,
                                      UpdateAPIView)
 
@@ -19,7 +21,11 @@ class UploadInfoNotHasADView(RetrieveAPIView):
     serializer_class = UploadInfoSerializer
 
     def get_object(self):
-        return UploadInfo.objects.filter(comment_ad=None).exclude(channel_name='').first()
+        upload_complete_time = datetime.now() - timedelta(minutes=3)
+        return (UploadInfo.objects
+                          .filter(comment_ad=None, created__lte=upload_complete_time)
+                          .exclude(channel_name='')
+                          .first())
 
 
 class UploadInfoUpdateView(UpdateAPIView):
