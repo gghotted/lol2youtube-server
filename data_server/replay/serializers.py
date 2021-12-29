@@ -33,10 +33,12 @@ class KillReplaySerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
     filepath = serializers.SerializerMethodField()
+    file_url = serializers.SerializerMethodField()
+    org_file_url = serializers.SerializerMethodField()
 
     class Meta:
         model = KillReplay
-        fields = ('id', 'file', 'title', 'description', 'filepath')
+        fields = ('id', 'file', 'title', 'description', 'filepath', 'file_url', 'org_file_url')
 
     def get_title(self, obj):
         return obj.title
@@ -45,4 +47,30 @@ class KillReplaySerializer(serializers.ModelSerializer):
         return obj.description
 
     def get_filepath(self, obj):
-        return obj.file.file.path
+        if obj.file:
+            return obj.file.file.path
+        else:
+            return None
+    
+    def get_org_file_url(self, obj):
+        request = self.context['request']
+        return request.build_absolute_uri(obj.org_file.file.url)
+
+    def get_file_url(self, obj):
+        request = self.context['request']
+        if obj.file:
+            return request.build_absolute_uri(obj.file.file.url)
+        return ''
+
+
+class KillReplayUpdateSerializer(serializers.ModelSerializer):
+    shorts_file = serializers.FileField(write_only=True)
+
+    class Meta:
+        model = KillReplay
+        fields = ('shorts_file', )
+    
+    def update(self, instance, validated_data):
+        instance.file = ReplayFile.objects.create(file=validated_data['shorts_file'])
+        instance.save()
+        return instance

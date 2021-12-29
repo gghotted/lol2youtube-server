@@ -72,17 +72,24 @@ class KillReplay(ReplaySource):
     event = models.ForeignKey('event.ChampionKill', on_delete=models.SET_NULL, related_name='killreplay', null=True)
     long_file = models.ForeignKey('replay.KillLongReplay', on_delete=models.DO_NOTHING, related_name='short_files', null=True)
 
-    title_format = '#펜타킬 #{killer} #롤 #shorts'
-    description_format = '\n'.join([
+    kor_title_format = '#펜타킬 #{killer} #롤 #shorts'
+    kor_description_format = '\n'.join([
         '펜타킬러 총 데미지: {total_damage}',
         '펜타킬러 총 데미지 기여도: {total_damage_contribution:.2}',
         '펜타킬 시간: {total_duration}',
     ])
 
+    title_format = '#Pentakill #{killer} #LOL #shorts'
+    description_format = '\n'.join([
+        'Pentakiller Total Damage: {total_damage}',
+        'Pentakiller Total Damage Contribution: {total_damage_contribution:.2}',
+        'Pentakill Duration: {total_duration}',
+    ])
+
     @property
     def title(self):
         return self.title_format.format(
-            killer=self.event.killer.get_champion()
+            killer=self.event.killer.champion.eng_name
         )
 
     @property
