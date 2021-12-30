@@ -4,7 +4,7 @@ services:
         image: nginx:latest
         container_name: nginx
         ports:
-            - "80:80"
+            - "8080:80"
         environment:
             NGINX_ENVSUBST_TEMPLATE_SUFFIX: ".conf"
             SERVER_NAME: ${NGINX_SERVER_NAME}
