@@ -39,12 +39,11 @@ class UploadInfo(BaseModel):
                 'game_creation': match.game_creation,
                 'game_version': match.version.str,
                 'upload_channel': self.channel_name,
-                'kill_duration': event.duration,
+                'kill_duration': round(event.duration * event.length),
+                'damage_contribution': event.damage_contribution,
                 'ultimate_hit_count': event.sequence_ultimate_hit_count,
-                'champion': {
-                    'eng_name': champion.eng_name,
-                    'kor_name': champion.kor_name,
-                }
+                'champion.eng_name': champion.eng_name,
+                'champion.kor_name': champion.kor_name,
             }
         )
         if res.status_code == 201:
