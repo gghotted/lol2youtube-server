@@ -141,11 +141,14 @@ class MatchListAPI(APIResource):
     def endpoint(self):
         from match.models import Version
 
-        start_time = (int(
-            Version.objects.latest_version()
-            .matches.order_by('game_creation')
-            .first().game_creation.timestamp()
-        ))
+        if Version.objects.latest_version():
+            start_time = (int(
+                Version.objects.latest_version()
+                .matches.order_by('game_creation')
+                .first().game_creation.timestamp()
+            ))
+        else:
+            start_time = 0
         queue = settings.MATCH_LIST_QUEUE_ID
         count = settings.MATCH_LIST_COUNT
         return (f'/lol/match/v5/matches/by-puuid/{self.puuid}/ids'
