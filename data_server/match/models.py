@@ -1,7 +1,9 @@
 from datetime import datetime
 
+import requests
 from champion.models import Champion
 from common.models import BaseManager, BaseModel
+from django.conf import settings
 from django.db import models
 from django.db.models import F
 from raw_data.riot_api import MatchAPI
@@ -81,6 +83,11 @@ class Match(BaseModel):
     @property
     def summoners(self):
         return Summoner.objects.filter(participants__match=self)
+
+    def post_to_main_crawler(self):
+        url = settings.MAIN_CRAWLER_HOST + '/raw_data/crawlablematch'
+        data = {'id': self.id}
+        requests.post(url, data, verify=False)
 
 
 class Participant(BaseModel):

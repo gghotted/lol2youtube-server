@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from timeline.models import Timeline
@@ -18,8 +19,11 @@ def match_post_save(sender, **kwargs):
 
     # 타임라인 생성
     if match.has_pentakill:
-        Timeline.objects.create_or_get_from_api(match_id=match.id)
-        print_log(match)
+        if settings.IS_MAIN_CRAWLER == True:
+            Timeline.objects.create_or_get_from_api(match_id=match.id)
+            print_log(match)
+        else:
+            match.post_to_main_crawler()
 
 
 def print_log(match):

@@ -170,3 +170,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 BACKUP_HOST = COMMON_SECRET['backup_host']
+
+IS_MAIN_CRAWLER = COMMON_SECRET['is_main_crawler']
+
+MAIN_CRAWLER_HOST = COMMON_SECRET['main_crawler_host']
