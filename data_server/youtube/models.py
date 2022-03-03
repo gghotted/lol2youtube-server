@@ -44,7 +44,8 @@ class UploadInfo(BaseModel):
                 'ultimate_hit_count': event.sequence_ultimate_hit_count,
                 'champion.eng_name': champion.eng_name,
                 'champion.kor_name': champion.kor_name,
-            }
+            },
+            verify=False,
         )
         if res.status_code == 201:
             self.is_backuped = True
