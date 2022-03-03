@@ -236,7 +236,6 @@ class ChampionKill(Event):
         if self.start.length < 2:
             return
         self.start.duration = (kill.time - self.start.time) / self.start.length
-        self.start.duration_score = DurationScore.evaluate(self.start.duration)
 
     def _set_ultimate_hit_count(self, kill):
         self.start.sequence_ultimate_hit_count += kill.ultimate_hits.count()
