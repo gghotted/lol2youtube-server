@@ -63,3 +63,7 @@ class APIKey(BaseModel):
     key = models.CharField(max_length=128, blank=True)
     objects = APIKeyManager()
 
+
+class CrawlableMatch(BaseModel):
+    id = models.CharField(primary_key=True, max_length=64)
+

@@ -1,3 +1,7 @@
-from django.shortcuts import render
+from rest_framework.generics import CreateAPIView
 
-# Create your views here.
+from raw_data import serializers
+
+
+class CrawlableMatchCreateView(CreateAPIView):
+    serializer_class = serializers.CrawlableMatchSerializer

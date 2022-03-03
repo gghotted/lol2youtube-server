@@ -24,6 +24,7 @@ urlpatterns = [
     path('event/', include('event.urls')),
     path('champion/', include('champion.urls')),
     path('youtube/', include('youtube.urls')),
+    path('raw_data/', include('raw_data.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

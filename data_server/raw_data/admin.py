@@ -5,7 +5,7 @@ from django.db.models import BooleanField, Case, Value, When
 from django.db.models.expressions import F
 from event.models import ChampionKill
 
-from raw_data.models import APIKey, JsonData
+from raw_data.models import APIKey, CrawlableMatch, JsonData
 
 
 @admin.register(JsonData)
@@ -84,4 +84,12 @@ class MatchJsonDataAdmin(admin.ModelAdmin):
 class APIKeyAdmin(admin.ModelAdmin):
     list_display = (
         'key',
+    )
+
+
+@admin.register(CrawlableMatch)
+class APIKeyAdmin(admin.ModelAdmin):
+    list_display = (
+        'created',
+        'id',
     )
