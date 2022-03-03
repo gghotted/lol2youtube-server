@@ -17,8 +17,9 @@ def match_post_save(sender, **kwargs):
         Participant.objects.create(match=match, **Participant.parse_json(dot_data))
 
     # 타임라인 생성
-    Timeline.objects.create_or_get_from_api(match_id=match.id)
-    print_log(match)
+    if match.has_pentakill:
+        Timeline.objects.create_or_get_from_api(match_id=match.id)
+        print_log(match)
 
 
 def print_log(match):
