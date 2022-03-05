@@ -87,7 +87,10 @@ class Match(BaseModel):
     def post_to_main_crawler(self):
         url = settings.MAIN_CRAWLER_HOST + '/raw_data/crawlablematch'
         data = {'id': self.id}
-        requests.post(url, data, verify=False)
+        try:
+            requests.post(url, data, verify=False)
+        except:
+            pass
 
 
 class Participant(BaseModel):
