@@ -4,7 +4,7 @@ import time
 from data_cleaner.json_data import JsonDataCleaner
 from django.conf import settings
 from match.models import Match
-from raw_data.models import JsonData
+from raw_data.models import CrawlableMatch, JsonData
 from summoner.models import Summoner
 
 sigint_received = False
@@ -43,8 +43,15 @@ class MatchCrawler:
         self._delete_invalid_data(JsonData.objects.timelines(), '타임라인')
 
     def _loop(self):
+        if settings.IS_MAIN_CRAWLER:
+            self._crawl_crawlable_match()
         summoner = Summoner.objects.get_to_update()
         summoner.update_matches()
+
+    def _crawl_crawlable_match(self):
+        obj = CrawlableMatch.objects.filter(used=False).first()
+        if obj:
+            obj.crawl()
 
     def _is_continuable(self):
         return (Match.objects.count() < self.break_count) and (sigint_received == False)

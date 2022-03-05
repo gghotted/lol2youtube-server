@@ -66,4 +66,7 @@ class APIKey(BaseModel):
 
 class CrawlableMatch(BaseModel):
     id = models.CharField(primary_key=True, max_length=64)
+    used = models.BooleanField(default=False)
 
+    def crawl(self):
+        pass
