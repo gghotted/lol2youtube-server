@@ -69,4 +69,16 @@ class CrawlableMatch(BaseModel):
     used = models.BooleanField(default=False)
 
     def crawl(self):
-        pass
+        from match.models import Match
+        
+        match = Match.objects.create_or_get_from_api(match_id=self.id)
+        matches = Match.objects.filter(id=match.id)
+
+        created_jsons = matches.values('json').union(
+            matches.values('timeline__json'),
+            matches.values('participants__summoner__json'),
+        )
+        JsonData.objects.filter(id__in=created_jsons).update(parse_success=True)
+        
+        self.used = True
+        self.save()

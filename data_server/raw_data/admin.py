@@ -92,4 +92,5 @@ class APIKeyAdmin(admin.ModelAdmin):
     list_display = (
         'created',
         'id',
+        'used',
     )
