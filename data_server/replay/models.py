@@ -71,6 +71,7 @@ class LongReplaySource(BaseModel):
 class KillReplay(ReplaySource):
     event = models.ForeignKey('event.ChampionKill', on_delete=models.SET_NULL, related_name='killreplay', null=True)
     long_file = models.ForeignKey('replay.KillLongReplay', on_delete=models.DO_NOTHING, related_name='short_files', null=True)
+    ad_comment = models.CharField(blank=True, default='')
 
     kor_title_format = '#펜타킬 #{killer} #롤 #shorts'
     kor_description_format = '\n'.join([

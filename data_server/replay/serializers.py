@@ -68,9 +68,10 @@ class KillReplayUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = KillReplay
-        fields = ('shorts_file', )
+        fields = ('shorts_file', 'ad_comment')
     
     def update(self, instance, validated_data):
         instance.file = ReplayFile.objects.create(file=validated_data['shorts_file'])
+        instance.ad_comment = validated_data['ad_comment']
         instance.save()
         return instance
