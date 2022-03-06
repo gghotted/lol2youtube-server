@@ -142,7 +142,7 @@ class MatchListAPI(APIResource):
         from match.models import Version
         
         version = Version.objects.latest_version()
-        if version and version.matches.exists():
+        if version:
             start_time = (int(
                 version
                 .matches.order_by('game_creation')

@@ -12,4 +12,6 @@ class VersionManger(BaseManager):
         )
 
     def latest_version(self):
-        return self.filter(useable=True).order_by('-last_game_creation').first()
+        return (self.annotate(match_count=Count('matches'))
+                    .filter(useable=True, match_count__gt=0)
+                    .order_by('-last_game_creation').first())
