@@ -140,10 +140,11 @@ class MatchListAPI(APIResource):
     @property
     def endpoint(self):
         from match.models import Version
-
-        if Version.objects.latest_version():
+        
+        version = Version.objects.latest_version()
+        if version and version.matches.exists():
             start_time = (int(
-                Version.objects.latest_version()
+                version
                 .matches.order_by('game_creation')
                 .first().game_creation.timestamp()
             ))
