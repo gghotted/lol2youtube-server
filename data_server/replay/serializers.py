@@ -72,6 +72,6 @@ class KillReplayUpdateSerializer(serializers.ModelSerializer):
     
     def update(self, instance, validated_data):
         instance.file = ReplayFile.objects.create(file=validated_data['shorts_file'])
-        instance.ad_comment = validated_data['ad_comment']
+        instance.ad_comment = validated_data.get('ad_comment', '')
         instance.save()
         return instance
